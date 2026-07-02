@@ -106,16 +106,16 @@
 - [x] Quick stats cards dengan animasi (Tailwind hover & transition)
 
 ### 2.2 WO Management
-- [ ] Halaman list semua WO (tabel + filter + search + pagination)
-- [ ] Halaman detail WO (profil, statistik, project)
-- [ ] Aksi: Approve registrasi WO baru
-- [ ] Aksi: Reject registrasi WO
-- [ ] Aksi: Suspend WO (disable akses)
-- [ ] Aksi: Activate WO (re-enable akses)
-- [ ] Aksi: Delete WO
-- [ ] Statistik per WO (total client, project, revenue)
-- [ ] Filter: Status (pending, active, suspended)
-- [ ] Search: Nama bisnis, email
+- [x] Halaman list semua WO (tabel + filter + search + pagination)
+- [x] Halaman detail WO (profil, statistik, project)
+- [x] Aksi: Approve registrasi WO baru (disatukan dengan aktivasi status / subscription setup)
+- [x] Aksi: Reject registrasi WO (disatukan dengan delete/suspend)
+- [x] Aksi: Suspend WO (disable akses) (PATCH request toggle-status)
+- [x] Aksi: Activate WO (re-enable akses) (PATCH request toggle-status)
+- [x] Aksi: Delete WO (DELETE request)
+- [x] Statistik per WO (total client, project, revenue)
+- [x] Filter: Status (pending, active, suspended)
+- [x] Search: Nama bisnis, email
 
 ### 2.3 Subscription Management
 - [ ] CRUD paket langganan (nama, harga, fitur, limit)

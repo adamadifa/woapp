@@ -20,6 +20,11 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
     // WO Management
     Route::resource('wo', \App\Http\Controllers\Admin\WoController::class)->except(['create', 'store', 'edit', 'update']);
     Route::patch('wo/{wo}/toggle-status', [\App\Http\Controllers\Admin\WoController::class, 'toggleStatus'])->name('wo.toggle-status');
+
+    // Subscription & Billing Management
+    Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class)->only(['index', 'show']);
+    Route::patch('subscriptions/{subscription}/approve', [\App\Http\Controllers\Admin\SubscriptionController::class, 'approve'])->name('subscriptions.approve');
+    Route::patch('subscriptions/{subscription}/reject', [\App\Http\Controllers\Admin\SubscriptionController::class, 'reject'])->name('subscriptions.reject');
 });
 
 // Wedding Organizer Panel Routes
