@@ -24,15 +24,15 @@
 **🎯 Tujuan:** Setup project, database, dan sistem autentikasi multi-role.
 
 ### 1.1 Project Setup
-- [ ] Initialize project Laravel 11 (`composer create-project laravel/laravel woapp`)
-- [ ] Install Alpine.js (`npm install alpinejs`)
-- [ ] Setup database MySQL 8.0+
-- [ ] Setup repository Git & branching strategy (main, develop, feature/*)
-- [ ] Setup environment variables (.env)
-- [ ] Setup CI/CD pipeline (GitHub Actions / GitLab CI)
-- [ ] Install & konfigurasi dependencies utama (Laravel Breeze, dll)
-- [ ] Setup PHP CS Fixer & Laravel Pint
-- [ ] Buat struktur folder project (Modules / standard Laravel)
+- [x] Initialize project Laravel 11 (`composer create-project laravel/laravel woapp`)
+- [x] Install Alpine.js (`npm install alpinejs`)
+- [x] Setup database MySQL 8.0+
+- [x] Setup repository Git & branching strategy (main, develop, feature/*)
+- [x] Setup environment variables (.env)
+- [-] Setup CI/CD pipeline (GitHub Actions / GitLab CI) (Skipped for now)
+- [x] Install & konfigurasi dependencies utama (Laravel Breeze, dll)
+- [x] Setup PHP CS Fixer & Laravel Pint
+- [x] Buat struktur folder project (Standard Laravel - Opsi A)
 
 ### 1.2 Database & Migration
 - [ ] Finalisasi ERD (Entity Relationship Diagram)

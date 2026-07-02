@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['super_admin', 'wo', 'client'])->default('wo');
+            $table->unsignedBigInteger('tenant_id')->nullable()->index()->comment('WO Profile ID for multi-tenancy');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });
