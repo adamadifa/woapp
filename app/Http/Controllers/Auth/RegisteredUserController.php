@@ -34,17 +34,34 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'business_name' => ['required', 'string', 'max:255'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'wo',
+                'is_active' => true,
+            ]);
 
-        event(new Registered($user));
+            // Create profile for this WO
+            $woProfile = \App\Models\WoProfile::create([
+                'user_id' => $user->id,
+                'business_name' => $request->business_name,
+                'slug' => \Illuminate\Support\Str::slug($request->business_name) . '-' . uniqid(),
+                'subscription_plan' => 'free',
+            ]);
 
-        Auth::login($user);
+            // Set tenant_id to link this user to the newly created WO profile
+            $user->update([
+                'tenant_id' => $woProfile->id,
+            ]);
+
+            event(new Registered($user));
+            Auth::login($user);
+        });
 
         return redirect(route('dashboard', absolute: false));
     }

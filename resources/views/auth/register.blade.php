@@ -4,9 +4,16 @@
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Nama Lengkap')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <!-- Business Name -->
+        <div class="mt-4">
+            <x-input-label for="business_name" :value="__('Nama Wedding Organizer / Bisnis')" />
+            <x-text-input id="business_name" class="block mt-1 w-full" type="text" name="business_name" :value="old('business_name')" required autocomplete="business_name" />
+            <x-input-error :messages="$errors->get('business_name')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
