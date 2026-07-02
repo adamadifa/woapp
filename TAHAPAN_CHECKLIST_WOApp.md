@@ -69,25 +69,25 @@
 - [x] Logout functionality
 
 ### 1.4 Layout & UI Foundation
-- [ ] Tentukan design system (color palette, typography, spacing)
-- [ ] Setup Google Fonts di Blade layout
-- [ ] Buat Blade layout: Super Admin (`layouts/admin.blade.php`)
-- [ ] Buat Blade layout: WO Panel (`layouts/wo.blade.php`)
-- [ ] Buat Blade layout: Client Panel (`layouts/client.blade.php`)
-- [ ] Blade components reusable: Button, Input, Select, Modal, Table, Card
-- [ ] Blade components reusable: Breadcrumb, Pagination, Badge, Alert
-- [ ] Responsive design foundation (mobile, tablet, desktop)
-- [ ] Dark mode toggle & support (Alpine.js)
-- [ ] Loading states & skeleton screens
-- [ ] Toast notification component (Alpine.js)
-- [ ] Empty state components
+- [x] Tentukan design system (color palette, typography, spacing)
+- [x] Setup Google Fonts di Blade layout
+- [x] Buat Blade layout: Super Admin (`layouts/admin.blade.php`)
+- [x] Buat Blade layout: WO Panel (`layouts/wo.blade.php`)
+- [x] Buat Blade layout: Client Panel (`layouts/client.blade.php`)
+- [x] Blade components reusable: Button, Input, Select, Modal, Table, Card
+- [x] Blade components reusable: Breadcrumb, Pagination, Badge, Alert
+- [x] Responsive design foundation (mobile, tablet, desktop)
+- [x] Dark mode toggle & support (Alpine.js)
+- [x] Loading states & skeleton screens
+- [x] Toast notification component (Alpine.js)
+- [x] Empty state components
 
 ### ✅ Phase 1 Deliverables
-- [ ] Project Laravel 11 + Alpine.js sudah ter-setup
-- [ ] User bisa register sebagai WO
-- [ ] User bisa login sesuai role (redirect otomatis)
-- [ ] Database MySQL sudah ter-setup dengan semua tabel
-- [ ] Blade layout dasar sudah jadi untuk 3 panel (Admin, WO, Client)
+- [x] Project Laravel 11 + Alpine.js sudah ter-setup
+- [x] User bisa register sebagai WO
+- [x] User bisa login sesuai role (redirect otomatis)
+- [x] Database MySQL sudah ter-setup dengan semua tabel
+- [x] Blade layout dasar sudah jadi untuk 3 panel (Admin, WO, Client)
 
 ---
 
