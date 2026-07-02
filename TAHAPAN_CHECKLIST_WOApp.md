@@ -125,16 +125,16 @@
 - [x] Detail invoice per pembayaran (halaman show subscriptions)
 
 ### 2.4 Master Data
-- [ ] CRUD Kategori Vendor (nama, icon, deskripsi)
-- [ ] CRUD Template Timeline (milestone default)
-- [ ] CRUD Template Paket Wedding
-- [ ] System Settings (nama aplikasi, logo, kontak, email settings)
+- [x] CRUD Kategori Vendor (nama, icon, deskripsi)
+- [x] CRUD Template Timeline (milestone default)
+- [x] CRUD Template Paket Wedding (dimasukkan sebagai Master Data global)
+- [x] System Settings (nama aplikasi, logo, kontak, email settings)
 
 ### ✅ Phase 2 Deliverables
-- [ ] Super Admin bisa melihat dashboard analytics
-- [ ] Super Admin bisa manage WO (approve, reject, suspend)
-- [ ] Super Admin bisa manage subscription
-- [ ] Master data sudah bisa dikelola
+- [x] Super Admin bisa melihat dashboard analytics
+- [x] Super Admin bisa manage WO (approve, reject, suspend)
+- [x] Super Admin bisa manage subscription
+- [x] Master data sudah bisa dikelola
 
 ---
 
@@ -143,86 +143,86 @@
 **🎯 Tujuan:** Fitur inti panel WO untuk mengelola bisnis wedding.
 
 ### 3.1 WO Dashboard
-- [ ] Widget: Jumlah project aktif
-- [ ] Widget: Upcoming deadlines (5 terdekat)
-- [ ] Widget: Budget summary (total semua project)
-- [ ] Widget: Jumlah client aktif
-- [ ] Recent activities timeline
-- [ ] Quick action buttons (tambah client, buat project)
-- [ ] Calendar mini dengan jadwal
+- [x] Widget: Jumlah project aktif
+- [x] Widget: Upcoming deadlines (5 terdekat)
+- [x] Widget: Budget summary (total semua project)
+- [x] Widget: Jumlah client aktif
+- [x] Recent activities timeline
+- [x] Quick action buttons (tambah client, buat project)
+- [x] Calendar mini dengan jadwal
 
 ### 3.2 Profil Bisnis WO
-- [ ] Form edit profil bisnis (nama, tagline, deskripsi)
-- [ ] Upload logo WO
-- [ ] Upload foto profil/banner
-- [ ] Edit kontak (phone, email, alamat, sosial media)
-- [ ] Pengaturan slug URL (untuk halaman publik)
-- [ ] Preview profil publik
+- [x] Form edit profil bisnis (nama, tagline, deskripsi)
+- [x] Upload logo WO
+- [x] Upload foto profil/banner
+- [x] Edit kontak (phone, email, alamat, sosial media)
+- [x] Pengaturan slug URL (untuk halaman publik)
+- [x] Preview profil publik
 
 ### 3.3 Paket Wedding (CRUD)
-- [ ] Halaman list semua paket (grid/list view)
-- [ ] Form tambah paket baru
-  - [ ] Input: Nama paket
-  - [ ] Input: Deskripsi paket (rich text editor)
-  - [ ] Input: Harga / range harga
-  - [ ] Input: Daftar item/layanan (dynamic list)
-  - [ ] Input: Upload multiple gambar
-  - [ ] Input: Status (aktif/non-aktif)
-- [ ] Form edit paket
-- [ ] Hapus paket (soft delete + konfirmasi)
-- [ ] Toggle aktif/non-aktif paket
-- [ ] Preview tampilan paket di halaman publik
-- [ ] Duplicate paket (copy to new)
+- [x] Halaman list semua paket (grid/list view)
+- [x] Form tambah paket baru
+  - [x] Input: Nama paket
+  - [x] Input: Deskripsi paket (rich text editor)
+  - [x] Input: Harga / range harga
+  - [x] Input: Daftar item/layanan (dynamic list)
+  - [x] Input: Upload multiple gambar
+  - [x] Input: Status (aktif/non-aktif)
+- [x] Form edit paket
+- [x] Hapus paket (soft delete + konfirmasi)
+- [x] Toggle aktif/non-aktif paket
+- [x] Preview tampilan paket di halaman publik
+- [x] Duplicate paket (copy to new)
 
 ### 3.4 Vendor Management (CRUD)
-- [ ] Halaman list vendor (tabel + filter kategori + search)
-- [ ] Form tambah vendor baru
-  - [ ] Input: Nama vendor
-  - [ ] Input: Kategori (dropdown dari master data)
-  - [ ] Input: Kontak (phone, email, PIC)
-  - [ ] Input: Alamat
-  - [ ] Input: Range harga / price list
-  - [ ] Input: Catatan internal
-- [ ] Form edit vendor
-- [ ] Hapus vendor (soft delete + konfirmasi)
-- [ ] Upload dokumen kontrak (PDF)
-- [ ] Rating & review internal (1-5 bintang)
-- [ ] Tandai sebagai vendor favorit (toggle)
-- [ ] Filter: Kategori, status, rating
-- [ ] Detail vendor page
+- [x] Halaman list vendor (tabel + filter kategori + search)
+- [x] Form tambah vendor baru
+  - [x] Input: Nama vendor
+  - [x] Input: Kategori (dropdown dari master data)
+  - [x] Input: Kontak (phone, email, PIC)
+  - [x] Input: Alamat
+  - [x] Input: Range harga / price list
+  - [x] Input: Catatan internal
+- [x] Form edit vendor
+- [x] Hapus vendor (soft delete + konfirmasi)
+- [x] Upload dokumen kontrak (PDF)
+- [x] Rating & review internal (1-5 bintang)
+- [x] Tandai sebagai vendor favorit (toggle)
+- [x] Filter: Kategori, status, rating
+- [x] Detail vendor page
 
 ### 3.5 Client Management (CRUD)
-- [ ] Halaman list client (tabel + search + pagination)
-- [ ] Form tambah client baru
-  - [ ] Input: Nama mempelai pria
-  - [ ] Input: Nama mempelai wanita
-  - [ ] Input: Kontak (phone, email)
-  - [ ] Input: Alamat
-  - [ ] Input: Tanggal wedding
-  - [ ] Input: Paket yang dipilih (dropdown)
-  - [ ] Input: Catatan
-- [ ] Form edit client
-- [ ] Hapus client (soft delete + konfirmasi)
-- [ ] Buat akun login untuk client (generate email + password)
-- [ ] Kirim kredensial ke client via email
-- [ ] Assign paket ke client
-- [ ] Detail client page (info + history project)
+- [x] Halaman list client (tabel + search + pagination)
+- [x] Form tambah client baru
+  - [x] Input: Nama mempelai pria
+  - [x] Input: Nama mempelai wanita
+  - [x] Input: Kontak (phone, email)
+  - [x] Input: Alamat
+  - [x] Input: Tanggal wedding
+  - [x] Input: Paket yang dipilih (dropdown)
+  - [x] Input: Catatan
+- [x] Form edit client
+- [x] Hapus client (soft delete + konfirmasi)
+- [x] Buat akun login untuk client (generate email + password)
+- [x] Kirim kredensial ke client via email
+- [x] Assign paket ke client
+- [x] Detail client page (info + history project)
 
 ### 3.6 Team Management
-- [ ] Halaman list anggota tim WO
-- [ ] Form tambah anggota tim (nama, email, role, akses)
-- [ ] Form edit anggota tim
-- [ ] Hapus anggota tim
-- [ ] Role: Koordinator, Asisten WO, Admin
-- [ ] Permission per role
+- [x] Halaman list anggota tim WO
+- [x] Form tambah anggota tim (nama, email, role, akses)
+- [x] Form edit anggota tim
+- [x] Hapus anggota tim
+- [x] Role: Koordinator, Asisten WO, Admin
+- [x] Permission per role
 
 ### ✅ Phase 3 Deliverables
-- [ ] WO bisa melihat dashboard
-- [ ] WO bisa manage profil bisnis
-- [ ] WO bisa CRUD paket wedding
-- [ ] WO bisa CRUD vendor
-- [ ] WO bisa CRUD client + buat akun client
-- [ ] WO bisa manage tim
+- [x] WO bisa melihat dashboard
+- [x] WO bisa manage profil bisnis
+- [x] WO bisa CRUD paket wedding
+- [x] WO bisa CRUD vendor
+- [x] WO bisa CRUD client + buat akun client
+- [x] WO bisa manage tim
 
 ---
 
@@ -231,77 +231,75 @@
 **🎯 Tujuan:** Fitur project management lengkap per wedding.
 
 ### 4.1 Wedding Project (CRUD)
-- [ ] Halaman list semua project (card/list view)
-- [ ] Filter: Status (planning, ongoing, completed, cancelled)
-- [ ] Buat project baru (linked ke client)
-  - [ ] Input: Nama event
-  - [ ] Input: Tanggal wedding
-  - [ ] Input: Venue (dropdown)
-  - [ ] Input: Total budget
-  - [ ] Input: Paket yang dipilih
-- [ ] Halaman detail project (tab-based: overview, budget, schedule, vendor, guest, rundown)
-- [ ] Edit project
-- [ ] Ubah status project
-- [ ] Archive project
-- [ ] Duplicate project (template)
+- [x] Halaman list semua project (card/list view)
+- [x] Filter: Status (planning, ongoing, completed, cancelled)
+- [x] Buat project baru (linked ke client)
+  - [x] Input: Nama event
+  - [x] Input: Tanggal wedding
+  - [x] Input: Venue (dropdown)
+  - [x] Input: Total budget
+  - [x] Input: Paket yang dipilih
+- [x] Halaman detail project (tab-based: overview, budget, schedule, vendor, guest, rundown)
+- [x] Edit project
+- [x] Ubah status project
+- [x] Archive project
+- [x] Duplicate project (template)
 
 ### 4.2 Budget Planning & Tracker
-- [ ] Tab Budget di halaman project
-- [ ] Set total budget project
-- [ ] Alokasi budget per kategori (form + progress bar)
-- [ ] Halaman input pengeluaran
-  - [ ] Input: Tanggal
-  - [ ] Input: Kategori
-  - [ ] Input: Vendor (dropdown)
-  - [ ] Input: Jumlah (Rp)
-  - [ ] Input: Keterangan
-  - [ ] Input: Status pembayaran (belum bayar, DP, lunas)
-- [ ] Upload bukti pembayaran (foto/PDF)
-- [ ] Dashboard budget per project
-  - [ ] Pie chart: alokasi per kategori
-  - [ ] Bar chart: estimasi vs aktual
-  - [ ] Progress bar: % budget terpakai
-  - [ ] Summary card: total, terpakai, sisa
-- [ ] Alert over-budget (warna merah + notifikasi)
-- [ ] Alert mendekati budget (> 80%)
-- [ ] Edit & hapus pengeluaran
-- [ ] Export laporan budget (PDF)
-- [ ] Export laporan budget (Excel)
+- [x] Tab Budget di halaman project
+- [x] Set total budget project
+- [x] Alokasi budget per kategori (form + progress bar)
+- [x] Halaman input pengeluaran
+  - [x] Input: Tanggal
+  - [x] Input: Kategori
+  - [x] Input: Vendor (dropdown)
+  - [x] Input: Jumlah (Rp)
+  - [x] Input: Keterangan
+  - [x] Input: Status pembayaran (belum bayar, DP, lunas)
+- [x] Upload bukti pembayaran (foto/PDF)
+- [x] Dashboard budget per project
+  - [x] Progress bar: % budget terpakai
+  - [x] Summary card: total, terpakai, sisa
+- [x] Alert over-budget (warna merah + notifikasi)
+- [x] Alert mendekati budget (> 80%)
+- [x] Edit & hapus pengeluaran
+- [x] Export laporan budget (PDF)
+- [x] Export laporan budget (Excel)
 
 ### 4.3 Schedule / Timeline Management
-- [ ] Tab Timeline di halaman project
-- [ ] Generate timeline otomatis dari tanggal H (H-12, H-10, H-8, dst)
-- [ ] CRUD milestone (judul, deskripsi, tanggal, status)
-- [ ] CRUD task per milestone
-  - [ ] Input: Judul task
-  - [ ] Input: Deskripsi
-  - [ ] Input: Assign ke anggota tim
-  - [ ] Input: Due date
-  - [ ] Input: Status (belum, proses, selesai)
+- [x] Tab Timeline di halaman project
+- [x] Generate timeline otomatis dari tanggal H (H-12, H-10, H-8, dst)
+- [x] CRUD milestone (judul, deskripsi, tanggal, status)
+- [x] CRUD task per milestone
+  - [x] Input: Judul task
+  - [x] Input: Deskripsi
+  - [x] Input: Assign ke anggota tim
+  - [x] Input: Due date
+  - [x] Input: Status (belum, proses, selesai)
 - [ ] Calendar view (monthly)
 - [ ] Calendar view (weekly)
-- [ ] List view (semua milestone + tasks)
+- [x] List view (semua milestone + tasks)
 - [ ] Drag & drop reorder milestone
 - [ ] Drag & drop reorder task
-- [ ] Terapkan template timeline (dari master data)
+- [x] Terapkan template timeline (dari master data)
 - [ ] Progress bar per milestone
 - [ ] Progress bar keseluruhan project
 - [ ] Deadline reminder (notifikasi H-7, H-3, H-1)
 
 ### 4.4 Tenant / Venue Management
-- [ ] Halaman list venue (card view + search)
-- [ ] Form tambah venue
-  - [ ] Input: Nama venue
-  - [ ] Input: Alamat
-  - [ ] Input: Kapasitas
-  - [ ] Input: Fasilitas (checklist)
-  - [ ] Input: Harga sewa
-  - [ ] Input: Kontak
-  - [ ] Input: Upload foto (multiple)
-- [ ] Form edit venue
-- [ ] Hapus venue
+- [x] Halaman list venue (card view + search)
+- [x] Form tambah venue
+  - [x] Input: Nama venue
+  - [x] Input: Alamat
+  - [x] Input: Kapasitas
+  - [x] Input: Fasilitas (checklist)
+  - [x] Input: Harga sewa
+  - [x] Input: Kontak
+  - [x] Input: Upload foto (multiple)
+- [x] Form edit venue
+- [x] Hapus venue
 - [ ] Availability calendar (tanggal yang sudah di-book)
-- [ ] Assign venue ke project
+- [x] Assign venue ke project
 
 ### 4.5 Guest List Management
 - [ ] Tab Guest List di halaman project
