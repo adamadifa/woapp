@@ -1,5 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarOpen: true }" :class="{ 'dark': darkMode }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
+      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarOpen: true }" 
+      x-init="$watch('darkMode', val => { 
+          localStorage.setItem('darkMode', val); 
+          if(val) { document.documentElement.classList.add('dark'); } 
+          else { document.documentElement.classList.remove('dark'); } 
+      })" 
+      :class="{ 'dark': darkMode }">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +20,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
+        <script>
+            if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-200">
@@ -103,7 +117,7 @@
                     <!-- Topbar Controls (Language, Theme, Alerts, User) -->
                     <div class="flex items-center gap-3">
                         <!-- Dark Mode Toggle -->
-                        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-xl transition-all">
+                        <button @click="darkMode = !darkMode" class="text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-xl transition-all">
                             <!-- Moon Icon -->
                             <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                             <!-- Sun Icon -->
