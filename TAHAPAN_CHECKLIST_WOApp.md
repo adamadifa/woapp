@@ -96,14 +96,14 @@
 **🎯 Tujuan:** Panel Super Admin untuk mengelola seluruh platform.
 
 ### 2.1 Super Admin Dashboard
-- [ ] Widget: Total WO terdaftar (aktif/non-aktif)
-- [ ] Widget: Total Client di seluruh platform
-- [ ] Widget: Total Wedding Project (ongoing/completed)
-- [ ] Widget: Revenue platform
-- [ ] Grafik pertumbuhan user (line chart)
-- [ ] Grafik WO baru per bulan (bar chart)
-- [ ] Recent activities log (10 terbaru)
-- [ ] Quick stats cards dengan animasi
+- [x] Widget: Total WO terdaftar (aktif/non-aktif)
+- [x] Widget: Total Client di seluruh platform
+- [x] Widget: Total Wedding Project (ongoing/completed)
+- [x] Widget: Revenue platform
+- [x] Grafik pertumbuhan user (line chart) (visual placeholder SVG)
+- [x] Grafik WO baru per bulan (bar chart) (visual placeholder SVG)
+- [x] Recent activities log (10 terbaru) (disatukan dengan table Recent Orders)
+- [x] Quick stats cards dengan animasi (Tailwind hover & transition)
 
 ### 2.2 WO Management
 - [ ] Halaman list semua WO (tabel + filter + search + pagination)

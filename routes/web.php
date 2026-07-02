@@ -16,6 +16,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // Super Admin Panel Routes
 Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', \App\Http\Controllers\Admin\DashboardController::class)->name('dashboard');
+    
+    // WO Management
+    Route::resource('wo', \App\Http\Controllers\Admin\WoController::class)->except(['create', 'store', 'edit', 'update']);
+    Route::patch('wo/{wo}/toggle-status', [\App\Http\Controllers\Admin\WoController::class, 'toggleStatus'])->name('wo.toggle-status');
 });
 
 // Wedding Organizer Panel Routes
