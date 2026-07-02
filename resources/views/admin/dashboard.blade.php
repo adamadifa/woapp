@@ -18,10 +18,10 @@
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Revenue</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">Rp 150.000.000</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
                     <p class="text-[11px] text-emerald-500 font-semibold mt-1.5 flex items-center gap-0.5">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                        3.15% <span class="text-gray-400 font-normal">increases this month</span>
+                        Live <span class="text-gray-400 font-normal">active subscriptions total</span>
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-500 flex items-center justify-center">
@@ -33,10 +33,10 @@
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Wedding Organizers</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">128</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalWo }}</h3>
                     <p class="text-[11px] text-emerald-500 font-semibold mt-1.5 flex items-center gap-0.5">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                        8.75% <span class="text-gray-400 font-normal">increase last week</span>
+                        Live <span class="text-gray-400 font-normal">registered tenant accounts</span>
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center">
@@ -48,10 +48,10 @@
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Customers</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">942</h3>
-                    <p class="text-[11px] text-red-500 font-semibold mt-1.5 flex items-center gap-0.5">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"/></svg>
-                        1.25% <span class="text-gray-400 font-normal">decrease last week</span>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $totalClients }}</h3>
+                    <p class="text-[11px] text-emerald-500 font-semibold mt-1.5 flex items-center gap-0.5">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        Live <span class="text-gray-400 font-normal">active bridal couple clients</span>
                     </p>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-900/20 text-teal-500 flex items-center justify-center">
@@ -63,10 +63,9 @@
             <div class="bg-rose-500 p-6 rounded-2xl shadow-lg shadow-rose-100 dark:shadow-none text-white flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-rose-100 uppercase tracking-wider">Active Projects</p>
-                    <h3 class="text-2xl font-bold mt-1">45</h3>
+                    <h3 class="text-2xl font-bold mt-1">{{ $totalProjects }}</h3>
                     <div class="flex items-center gap-3 mt-2 text-[10px] text-rose-100 font-semibold">
-                        <span>Total Sale: <strong>8,546</strong></span>
-                        <span>Today: <strong>429</strong></span>
+                        <span>Total Active: <strong>{{ $totalProjects }}</strong></span>
                     </div>
                 </div>
                 <div class="w-12 h-12 rounded-2xl bg-rose-400 text-white flex items-center justify-center">
@@ -168,48 +167,36 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 text-gray-700 dark:text-gray-300 font-medium">
+                        @forelse($recentOrders as $order)
                         <tr>
-                            <td class="p-4 text-rose-600 dark:text-rose-400">#TBE73HHFSD</td>
+                            <td class="p-4 text-rose-600 dark:text-rose-400">#SUB{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</td>
                             <td class="p-4 flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-[10px]">JA</div>
-                                Judda Alex
+                                <div class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-[10px]">
+                                    {{ strtoupper(substr($order->woProfile->business_name ?? 'WO', 0, 2)) }}
+                                </div>
+                                {{ $order->woProfile->business_name ?? 'N/A' }}
                             </td>
-                            <td class="p-4 text-gray-500 dark:text-gray-400">Silver Plan Subscription</td>
-                            <td class="p-4 font-bold text-gray-900 dark:text-white">Rp 500.000</td>
-                            <td class="p-4 text-gray-400">4 Mar, 2026</td>
-                            <td class="p-4">Manual Transfer</td>
+                            <td class="p-4 text-gray-500 dark:text-gray-400">{{ ucfirst($order->plan) }} Plan Subscription</td>
+                            <td class="p-4 font-bold text-gray-900 dark:text-white">Rp {{ number_format($order->amount, 0, ',', '.') }}</td>
+                            <td class="p-4 text-gray-400">{{ $order->created_at->format('j M, Y') }}</td>
+                            <td class="p-4">{{ str_replace('_', ' ', ucfirst($order->payment_method)) }}</td>
                             <td class="p-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">Paid</span>
+                                @if($order->status === 'active')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">Active</span>
+                                @elseif($order->status === 'pending')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400">Pending</span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400">{{ ucfirst($order->status) }}</span>
+                                @endif
                             </td>
                         </tr>
+                        @empty
                         <tr>
-                            <td class="p-4 text-rose-600 dark:text-rose-400">#TRW7347387</td>
-                            <td class="p-4 flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center font-bold text-[10px]">MM</div>
-                                Manik Mia
-                            </td>
-                            <td class="p-4 text-gray-500 dark:text-gray-400">Gold Plan Subscription</td>
-                            <td class="p-4 font-bold text-gray-900 dark:text-white">Rp 1.200.000</td>
-                            <td class="p-4 text-gray-400">24 Mar, 2026</td>
-                            <td class="p-4">Manual Transfer</td>
-                            <td class="p-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400">Unpaid</span>
+                            <td colspan="7" class="p-8 text-center text-gray-400 dark:text-gray-500">
+                                Belum ada transaksi langganan terbaru.
                             </td>
                         </tr>
-                        <tr>
-                            <td class="p-4 text-rose-600 dark:text-rose-400">#YR6337737R</td>
-                            <td class="p-4 flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-[10px]">CH</div>
-                                Chanchal Hossain
-                            </td>
-                            <td class="p-4 text-gray-500 dark:text-gray-400">Pro Plan Subscription</td>
-                            <td class="p-4 font-bold text-gray-900 dark:text-white">Rp 2.500.000</td>
-                            <td class="p-4 text-gray-400">12 Mar, 2026</td>
-                            <td class="p-4">Manual Transfer</td>
-                            <td class="p-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400">Pending</span>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
