@@ -35,22 +35,22 @@
 - [x] Buat struktur folder project (Standard Laravel - Opsi A)
 
 ### 1.2 Database & Migration
-- [ ] Finalisasi ERD (Entity Relationship Diagram)
-- [ ] Buat migration: `users`
-- [ ] Buat migration: `wo_profiles`
-- [ ] Buat migration: `client_profiles`
-- [ ] Buat migration: `subscriptions`
-- [ ] Buat migration: `wedding_packages`
-- [ ] Buat migration: `vendors`
-- [ ] Buat migration: `clients`
-- [ ] Buat migration: `wedding_projects`
-- [ ] Buat migration: `budget_items`
-- [ ] Buat migration: `schedule_milestones`
-- [ ] Buat migration: `tasks`
-- [ ] Buat migration: `guest_list`
-- [ ] Buat migration: `rundown_items`
-- [ ] Buat migration: `team_members`
-- [ ] Buat migration: `venues`
+- [x] Finalisasi ERD (Entity Relationship Diagram)
+- [x] Buat migration: `users`
+- [x] Buat migration: `wo_profiles`
+- [x] Buat migration: `client_profiles`
+- [x] Buat migration: `subscriptions`
+- [x] Buat migration: `wedding_packages`
+- [x] Buat migration: `vendors`
+- [x] Buat migration: `clients`
+- [x] Buat migration: `wedding_projects`
+- [x] Buat migration: `budget_items`
+- [x] Buat migration: `schedule_milestones`
+- [x] Buat migration: `tasks`
+- [x] Buat migration: `guest_list`
+- [x] Buat migration: `rundown_items`
+- [ ] Buat migration: `team_members` (Akan digabungkan di users/wo_profiles / relational table jika dibutuhkan)
+- [x] Buat migration: `venues`
 - [ ] Buat seeders (Super Admin default, dummy data)
 - [ ] Setup multi-tenancy logic (data isolation per WO)
 
