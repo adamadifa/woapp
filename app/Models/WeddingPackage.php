@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WeddingPackage extends Model
 {
+    use Multitenantable;
+
     protected $fillable = [
         'wo_profile_id',
         'name',

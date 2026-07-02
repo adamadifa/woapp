@@ -51,7 +51,7 @@
 - [x] Buat migration: `rundown_items`
 - [ ] Buat migration: `team_members` (Akan digabungkan di users/wo_profiles / relational table jika dibutuhkan)
 - [x] Buat migration: `venues`
-- [ ] Buat seeders (Super Admin default, dummy data)
+- [x] Buat seeders (Super Admin default, dummy data)
 - [ ] Setup multi-tenancy logic (data isolation per WO)
 
 ### 1.3 Authentication System
