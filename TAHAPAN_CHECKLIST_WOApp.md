@@ -55,18 +55,18 @@
 - [x] Setup multi-tenancy logic (data isolation per WO)
 
 ### 1.3 Authentication System
-- [ ] Install Laravel Breeze / Fortify
-- [ ] Halaman Register WO (Blade form + validasi)
-- [ ] Halaman Login (multi-role: Super Admin, WO, Client)
-- [ ] Redirect berdasarkan role setelah login (middleware)
-- [ ] Email verification flow (Laravel built-in)
-- [ ] Forgot password / Reset password (Laravel built-in)
-- [ ] Middleware role-based access control (`RoleMiddleware`)
-- [ ] Guard untuk Super Admin routes (`admin/*`)
-- [ ] Guard untuk WO routes (`wo/*`)
-- [ ] Guard untuk Client routes (`client/*`)
-- [ ] Session management (Laravel session driver)
-- [ ] Logout functionality
+- [x] Install Laravel Breeze / Fortify
+- [x] Halaman Register WO (Blade form + validasi)
+- [x] Halaman Login (multi-role: Super Admin, WO, Client)
+- [x] Redirect berdasarkan role setelah login (middleware)
+- [x] Email verification flow (Laravel built-in)
+- [x] Forgot password / Reset password (Laravel built-in)
+- [x] Middleware role-based access control (`RoleMiddleware`)
+- [x] Guard untuk Super Admin routes (`admin/*`)
+- [x] Guard untuk WO routes (`wo/*`)
+- [x] Guard untuk Client routes (`client/*`)
+- [x] Session management (Laravel session driver)
+- [x] Logout functionality
 
 ### 1.4 Layout & UI Foundation
 - [ ] Tentukan design system (color palette, typography, spacing)
