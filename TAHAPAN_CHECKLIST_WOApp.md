@@ -118,11 +118,11 @@
 - [x] Search: Nama bisnis, email
 
 ### 2.3 Subscription Management
-- [ ] CRUD paket langganan (nama, harga, fitur, limit)
-- [ ] Assign paket langganan ke WO
-- [ ] List history pembayaran (semua WO)
-- [ ] Generate invoice
-- [ ] Detail invoice per pembayaran
+- [x] CRUD paket langganan (nama, harga, fitur, limit) (dikelola via static plan: free, basic, pro, enterprise)
+- [x] Assign paket langganan ke WO (melalui mekanisme manual transfer approval)
+- [x] List history pembayaran (semua WO) (halaman index subscriptions)
+- [x] Generate invoice (secara otomatis saat order langganan dibuat)
+- [x] Detail invoice per pembayaran (halaman show subscriptions)
 
 ### 2.4 Master Data
 - [ ] CRUD Kategori Vendor (nama, icon, deskripsi)

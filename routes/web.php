@@ -25,6 +25,14 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
     Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class)->only(['index', 'show']);
     Route::patch('subscriptions/{subscription}/approve', [\App\Http\Controllers\Admin\SubscriptionController::class, 'approve'])->name('subscriptions.approve');
     Route::patch('subscriptions/{subscription}/reject', [\App\Http\Controllers\Admin\SubscriptionController::class, 'reject'])->name('subscriptions.reject');
+
+    // Master Data Management
+    Route::resource('vendor-categories', \App\Http\Controllers\Admin\VendorCategoryController::class)->except(['create', 'show', 'edit']);
+    Route::resource('timeline-templates', \App\Http\Controllers\Admin\TimelineTemplateController::class)->except(['create', 'show', 'edit']);
+
+    // System Settings
+    Route::get('settings', [\App\Http\Controllers\Admin\SystemSettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [\App\Http\Controllers\Admin\SystemSettingController::class, 'update'])->name('settings.update');
 });
 
 // Wedding Organizer Panel Routes

@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             WoProfileSeeder::class,
             MasterDataSeeder::class,
+            MasterTimelineSeeder::class,
+            VendorCategorySeeder::class,
+            SystemSettingSeeder::class,
         ]);
     }
 }
