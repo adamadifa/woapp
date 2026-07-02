@@ -3,21 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class GuestList extends Model
+class ProjectChecklist extends Model
 {
-    protected $table = 'guest_list';
+    protected $table = 'project_checklists';
 
     protected $fillable = [
         'project_id',
         'name',
         'category',
-        'rsvp_status',
-        'guest_count',
-        'seat_number',
-        'notes',
+        'status',
+        'due_date',
     ];
 
     public function weddingProject(): BelongsTo

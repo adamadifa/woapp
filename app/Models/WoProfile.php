@@ -17,6 +17,11 @@ class WoProfile extends Model
         'phone',
         'address',
         'subscription_plan',
+        'landing_settings',
+    ];
+
+    protected $casts = [
+        'landing_settings' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -47,5 +52,10 @@ class WoProfile extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(WeddingProject::class);
+    }
+
+    public function inquiries(): HasMany
+    {
+        return $this->hasMany(WoInquiry::class, 'wo_profile_id');
     }
 }

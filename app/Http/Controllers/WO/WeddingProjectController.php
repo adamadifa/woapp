@@ -73,10 +73,95 @@ class WeddingProjectController extends Controller
         $teamMembers = \App\Models\User::where('tenant_id', auth()->user()->tenant_id)->whereIn('role', ['wo', 'wo_team'])->orderBy('name')->get();
         
         // Count active/done items if any
-        $rundownCount = $project->rundownItems()->count();
+        $rundownItems = $project->rundownItems()->orderBy('time_start')->get();
+        $rundownCount = $rundownItems->count();
         $milestonesCount = $milestones->count();
+
+        // Checklist items and stats
+        $checklists = $project->checklists()->orderBy('due_date')->get();
+        $checklistCount = $checklists->count();
+        $doneChecklistCount = $checklists->where('status', 'done')->count();
+        $todoChecklistCount = $checklists->where('status', 'todo')->count();
+        $checklistPercent = $checklistCount > 0 ? min(100, round(($doneChecklistCount / $checklistCount) * 100)) : 0;
         
-        return view('wo.projects.show', compact('project', 'totalBudget', 'rundownCount', 'milestonesCount', 'budgetItems', 'vendors', 'categories', 'milestones', 'teamMembers'));
+        $checklistCategories = $checklists->groupBy('category')->map(function ($items) {
+            $total = $items->count();
+            $done = $items->where('status', 'done')->count();
+            return [
+                'total' => $total,
+                'done' => $done,
+                'percent' => $total > 0 ? min(100, round(($done / $total) * 100)) : 0,
+            ];
+        });
+
+        // Guest list and stats
+        $guests = $project->guestList()->orderBy('name')->get();
+        $totalGuestCount = $guests->sum('guest_count');
+        $confirmedGuestCount = $guests->where('rsvp_status', 'confirmed')->sum('guest_count');
+        $declinedGuestCount = $guests->where('rsvp_status', 'declined')->sum('guest_count');
+        $pendingGuestCount = $guests->where('rsvp_status', 'pending')->sum('guest_count');
+        $categoryBreakdown = $guests->groupBy('category')->map(function ($items) {
+            return $items->sum('guest_count');
+        });
+
+        // Client notes & chat
+        $clientNotes = $project->clientNotes()->with('user')->orderBy('created_at', 'asc')->get();
+
+        return view('wo.projects.show', compact(
+            'project', 
+            'totalBudget', 
+            'rundownItems',
+            'rundownCount', 
+            'milestonesCount', 
+            'checklists',
+            'checklistCount',
+            'doneChecklistCount',
+            'todoChecklistCount',
+            'checklistPercent',
+            'checklistCategories',
+            'budgetItems', 
+            'vendors', 
+            'categories', 
+            'milestones', 
+            'teamMembers',
+            'guests',
+            'totalGuestCount',
+            'confirmedGuestCount',
+            'declinedGuestCount',
+            'pendingGuestCount',
+            'categoryBreakdown',
+            'clientNotes'
+        ));
+    }
+
+    /**
+     * Store notes/chat response to client.
+     */
+    public function storeNote(Request $request, WeddingProject $project): RedirectResponse
+    {
+        $request->validate([
+            'message' => ['required', 'string'],
+            'reference_file' => ['nullable', 'file', 'max:5120'],
+        ]);
+
+        $filePath = null;
+        $fileName = null;
+
+        if ($request->hasFile('reference_file')) {
+            $file = $request->file('reference_file');
+            $filePath = $file->store('client_references', 'public');
+            $fileName = $file->getClientOriginalName();
+        }
+
+        $project->clientNotes()->create([
+            'user_id' => auth()->id(),
+            'message' => $request->message,
+            'file_path' => $filePath,
+            'file_name' => $fileName,
+        ]);
+
+        return redirect()->route('wo.projects.show', [$project, 'tab' => 'notes'])
+            ->with('success', 'Catatan/tanggapan berhasil dikirim ke klien.');
     }
 
     /**

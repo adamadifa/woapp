@@ -69,15 +69,49 @@ Route::middleware(['auth', 'role:wo,wo_team'])->prefix('wo')->name('wo.')->group
     Route::put('projects/{project}/tasks/{task}', [\App\Http\Controllers\WO\TaskController::class, 'update'])->name('projects.tasks.update');
     Route::delete('projects/{project}/tasks/{task}', [\App\Http\Controllers\WO\TaskController::class, 'destroy'])->name('projects.tasks.destroy');
 
+    // Project Guest List
+    Route::post('projects/{project}/guests', [\App\Http\Controllers\WO\GuestListController::class, 'store'])->name('projects.guests.store');
+    Route::put('projects/{project}/guests/{guest}', [\App\Http\Controllers\WO\GuestListController::class, 'update'])->name('projects.guests.update');
+    Route::delete('projects/{project}/guests/{guest}', [\App\Http\Controllers\WO\GuestListController::class, 'destroy'])->name('projects.guests.destroy');
+    Route::post('projects/{project}/guests/import', [\App\Http\Controllers\WO\GuestListController::class, 'importCsv'])->name('projects.guests.import');
+    Route::get('projects/{project}/guests/export', [\App\Http\Controllers\WO\GuestListController::class, 'exportCsv'])->name('projects.guests.export');
+
+    // Project Rundown Management
+    Route::post('projects/{project}/rundown', [\App\Http\Controllers\WO\RundownController::class, 'store'])->name('projects.rundown.store');
+    Route::put('projects/{project}/rundown/{rundown}', [\App\Http\Controllers\WO\RundownController::class, 'update'])->name('projects.rundown.update');
+    Route::delete('projects/{project}/rundown/{rundown}', [\App\Http\Controllers\WO\RundownController::class, 'destroy'])->name('projects.rundown.destroy');
+    Route::post('projects/{project}/rundown/generate', [\App\Http\Controllers\WO\RundownController::class, 'generateTemplate'])->name('projects.rundown.generate');
+    Route::get('projects/{project}/rundown/print', [\App\Http\Controllers\WO\RundownController::class, 'print'])->name('projects.rundown.print');
+
+    // Project Checklist Management
+    Route::post('projects/{project}/checklists', [\App\Http\Controllers\WO\ChecklistController::class, 'store'])->name('projects.checklists.store');
+    Route::put('projects/{project}/checklists/{checklist}', [\App\Http\Controllers\WO\ChecklistController::class, 'update'])->name('projects.checklists.update');
+    Route::delete('projects/{project}/checklists/{checklist}', [\App\Http\Controllers\WO\ChecklistController::class, 'destroy'])->name('projects.checklists.destroy');
+    Route::patch('projects/{project}/checklists/{checklist}/toggle', [\App\Http\Controllers\WO\ChecklistController::class, 'toggleStatus'])->name('projects.checklists.toggle');
+    Route::post('projects/{project}/checklists/generate', [\App\Http\Controllers\WO\ChecklistController::class, 'generateTemplate'])->name('projects.checklists.generate');
+
+    // Project Notes & Chat
+    Route::post('projects/{project}/notes', [\App\Http\Controllers\WO\WeddingProjectController::class, 'storeNote'])->name('projects.notes.store');
+
     // Venue Management
+    Route::get('venues/{venue}/availability', [\App\Http\Controllers\WO\VenueController::class, 'availability'])->name('venues.availability');
     Route::resource('venues', \App\Http\Controllers\WO\VenueController::class)->except(['create', 'show', 'edit']);
+
+    // Landing Page Customization
+    Route::get('landing-page', [\App\Http\Controllers\WO\LandingPageController::class, 'edit'])->name('landing_page.edit');
+    Route::put('landing-page', [\App\Http\Controllers\WO\LandingPageController::class, 'update'])->name('landing_page.update');
 });
 
 // Client Panel Routes
 Route::middleware(['auth', 'role:client'])->prefix('client')->name('client.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('client.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Client\ClientController::class, 'dashboard'])->name('dashboard');
+    Route::get('/schedule', [\App\Http\Controllers\Client\ClientController::class, 'schedule'])->name('schedule');
+    Route::get('/budget', [\App\Http\Controllers\Client\ClientController::class, 'budget'])->name('budget');
+    Route::get('/vendors', [\App\Http\Controllers\Client\ClientController::class, 'vendors'])->name('vendors');
+    Route::get('/guests', [\App\Http\Controllers\Client\ClientController::class, 'guests'])->name('guests');
+    Route::get('/rundown', [\App\Http\Controllers\Client\ClientController::class, 'rundown'])->name('rundown');
+    Route::get('/notes', [\App\Http\Controllers\Client\ClientController::class, 'notes'])->name('notes');
+    Route::post('/notes', [\App\Http\Controllers\Client\ClientController::class, 'storeNote'])->name('notes.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -85,5 +119,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Public Wedding Organizer Profile Landing Page
+Route::get('/wo/{slug}', [\App\Http\Controllers\PublicWoController::class, 'show'])->name('public.wo.show');
+Route::post('/wo/{wo}/inquiry', [\App\Http\Controllers\PublicWoController::class, 'storeInquiry'])->name('public.wo.inquiry');
 
 require __DIR__.'/auth.php';

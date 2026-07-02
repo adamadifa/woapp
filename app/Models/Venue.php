@@ -23,11 +23,17 @@ class Venue extends Model
 
     protected $casts = [
         'images' => 'array',
+        'facilities' => 'array',
         'price' => 'decimal:2',
     ];
 
     public function woProfile(): BelongsTo
     {
         return $this->belongsTo(WoProfile::class);
+    }
+
+    public function weddingProjects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WeddingProject::class);
     }
 }

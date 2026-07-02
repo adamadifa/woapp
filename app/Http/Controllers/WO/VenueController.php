@@ -110,4 +110,31 @@ class VenueController extends Controller
 
         return redirect()->route('wo.venues.index')->with('success', 'Venue berhasil dihapus.');
     }
+
+    /**
+     * Display the availability calendar for the venue.
+     */
+    public function availability(Venue $venue): View
+    {
+        // Fetch all wedding projects linked to this venue that are active (planning, ongoing, completed)
+        $bookings = $venue->weddingProjects()
+            ->with('client')
+            ->whereIn('status', ['planning', 'ongoing', 'completed'])
+            ->orderBy('wedding_date')
+            ->get();
+
+        // Format bookings for the calendar
+        $events = $bookings->map(function ($project) {
+            return [
+                'title' => $project->name,
+                'date' => $project->wedding_date,
+                'status' => $project->status,
+                'client_name' => ($project->client->groom_name ?? '') . ' & ' . ($project->client->bride_name ?? ''),
+                'project_name' => $project->name,
+                'project_id' => $project->id,
+            ];
+        });
+
+        return view('wo.venues.availability', compact('venue', 'bookings', 'events'));
+    }
 }

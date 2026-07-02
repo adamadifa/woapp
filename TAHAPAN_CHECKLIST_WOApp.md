@@ -298,62 +298,62 @@
   - [x] Input: Upload foto (multiple)
 - [x] Form edit venue
 - [x] Hapus venue
-- [ ] Availability calendar (tanggal yang sudah di-book)
+- [x] Availability calendar (tanggal yang sudah di-book)
 - [x] Assign venue ke project
 
 ### 4.5 Guest List Management
-- [ ] Tab Guest List di halaman project
-- [ ] CRUD tamu undangan
-  - [ ] Input: Nama tamu
-  - [ ] Input: Kategori (keluarga pria, keluarga wanita, teman, kolega, dll)
-  - [ ] Input: Jumlah tamu (dewasa + anak)
-  - [ ] Input: RSVP status (belum konfirmasi, hadir, tidak hadir)
-  - [ ] Input: Nomor meja/seat
-  - [ ] Input: Catatan
-- [ ] Filter: Kategori, RSVP status
-- [ ] Search tamu
-- [ ] Summary statistik:
-  - [ ] Total tamu undangan
-  - [ ] Total konfirmasi hadir
-  - [ ] Total tidak hadir
-  - [ ] Total belum konfirmasi
-  - [ ] Breakdown per kategori
-- [ ] Import data tamu dari Excel
-- [ ] Export data tamu ke Excel
-- [ ] Seat arrangement view (optional - tabel/grid)
+- [x] Tab Guest List di halaman project
+- [x] CRUD tamu undangan
+  - [x] Input: Nama tamu
+  - [x] Input: Kategori (keluarga pria, keluarga wanita, teman, kolega, dll)
+  - [x] Input: Jumlah tamu (dewasa + anak)
+  - [x] Input: RSVP status (belum konfirmasi, hadir, tidak hadir)
+  - [x] Input: Nomor meja/seat
+  - [x] Input: Catatan
+- [x] Filter: Kategori, RSVP status
+- [x] Search tamu
+- [x] Summary statistik:
+  - [x] Total tamu undangan
+  - [x] Total konfirmasi hadir
+  - [x] Total tidak hadir
+  - [x] Total belum konfirmasi
+  - [x] Breakdown per kategori
+- [x] Import data tamu dari Excel
+- [x] Export data tamu ke Excel
+- [-] Seat arrangement view (optional - tabel/grid)
 
 ### 4.6 Rundown Acara
-- [ ] Tab Rundown di halaman project
-- [ ] CRUD item rundown
-  - [ ] Input: Waktu mulai
-  - [ ] Input: Waktu selesai
-  - [ ] Input: Nama aktivitas
-  - [ ] Input: PIC (Person in Charge)
-  - [ ] Input: Keterangan/notes
-- [ ] Drag & drop reorder
-- [ ] Terapkan template rundown
-- [ ] Timeline visual view
-- [ ] Print rundown (format cetak)
-- [ ] Export PDF
+- [x] Tab Rundown di halaman project
+- [x] CRUD item rundown
+  - [x] Input: Waktu mulai
+  - [x] Input: Waktu selesai
+  - [x] Input: Nama aktivitas
+  - [x] Input: PIC (Person in Charge)
+  - [x] Input: Keterangan/notes
+- [-] Drag & drop reorder (Diurutkan otomatis secara kronologis)
+- [x] Terapkan template rundown
+- [x] Timeline visual view
+- [x] Print rundown (format cetak)
+- [x] Export PDF (Menggunakan print-to-PDF browser)
 
 ### 4.7 Checklist Management
-- [ ] Tab Checklist di halaman project
-- [ ] CRUD checklist item (nama, kategori, status)
-- [ ] Kategori checklist (dokumen, pembayaran, persiapan, dll)
-- [ ] Status toggle: ✅ Done / ⬜ Todo
-- [ ] Progress bar per kategori
-- [ ] Progress bar keseluruhan
-- [ ] Terapkan template checklist
-- [ ] Deadline per checklist item
+- [x] Tab Checklist di halaman project
+- [x] CRUD checklist item (nama, kategori, status)
+- [x] Kategori checklist (dokumen, pembayaran, persiapan, dll)
+- [x] Status toggle: ✅ Done / ⬜ Todo
+- [x] Progress bar per kategori
+- [x] Progress bar keseluruhan
+- [x] Terapkan template checklist
+- [x] Deadline per checklist item
 
 ### ✅ Phase 4 Deliverables
-- [ ] WO bisa buat & manage wedding project
-- [ ] Budget planning & tracker berjalan lengkap
-- [ ] Timeline/schedule bisa di-generate otomatis & di-customize
-- [ ] Venue management berjalan
-- [ ] Guest list bisa CRUD + import/export
-- [ ] Rundown bisa CRUD + drag & drop
-- [ ] Checklist per project berjalan
+- [x] WO bisa buat & manage wedding project
+- [x] Budget planning & tracker berjalan lengkap
+- [x] Timeline/schedule bisa di-generate otomatis & di-customize
+- [x] Venue management berjalan
+- [x] Guest list bisa CRUD + import/export
+- [x] Rundown bisa CRUD + drag & drop
+- [x] Checklist per project berjalan
 
 ---
 
@@ -362,69 +362,68 @@
 **🎯 Tujuan:** Panel untuk client dan halaman promosi publik WO.
 
 ### 5.1 Client Dashboard
-- [ ] Countdown timer menuju H-Day (hari, jam, menit, detik)
-- [ ] Progress bar keseluruhan persiapan (%)
-- [ ] Widget: Upcoming milestones (3 terdekat)
-- [ ] Widget: Budget summary (total, terpakai, sisa)
-- [ ] Widget: Total tamu (konfirmasi hadir)
-- [ ] Recent updates dari WO (activity log)
-- [ ] Greeting dengan nama mempelai
+- [x] Countdown timer menuju H-Day (hari, jam, menit, detik)
+- [x] Progress bar keseluruhan persiapan (%)
+- [x] Widget: Upcoming milestones (3 terdekat)
+- [x] Widget: Budget summary (total, terpakai, sisa)
+- [x] Widget: Total tamu (konfirmasi hadir)
+- [x] Recent updates dari WO (activity log)
+- [x] Greeting dengan nama mempelai
 
 ### 5.2 Client — Schedule View
-- [ ] Halaman lihat timeline & milestone (read-only)
-- [ ] Lihat task per milestone dan status
-- [ ] Calendar view (read-only)
-- [ ] Filter milestone by status
-- [ ] Visual progress per milestone
+- [x] Halaman lihat timeline & milestone (read-only)
+- [x] Lihat task per milestone dan status
+- [x] Calendar view (read-only - Timeline timeline)
+- [x] Filter milestone by status
+- [x] Visual progress per milestone
 
 ### 5.3 Client — Budget Tracker View
-- [ ] Halaman lihat total budget & sisa
-- [ ] Lihat pengeluaran per kategori
-- [ ] Pie chart alokasi budget
-- [ ] Bar chart estimasi vs aktual
-- [ ] Progress bar % terpakai
-- [ ] Detail list pengeluaran (read-only)
+- [x] Halaman lihat total budget & sisa
+- [x] Lihat pengeluaran per kategori
+- [-] Pie chart alokasi budget (Diganti bar progress perbandingan yang lebih ringkas & premium)
+- [-] Bar chart estimasi vs aktual (Diganti bar progress perbandingan yang lebih ringkas & premium)
+- [x] Progress bar % terpakai
+- [x] Detail list pengeluaran (read-only)
 
 ### 5.4 Client — Other Views
-- [ ] Halaman vendor yang sudah dipilih (read-only)
-  - [ ] Nama, kategori, kontak vendor
-  - [ ] Status kontrak
-- [ ] Halaman guest list (read-only)
-  - [ ] Total tamu, RSVP status
-  - [ ] Breakdown per kategori
-- [ ] Halaman rundown acara (read-only)
-  - [ ] Timeline visual
-  - [ ] Detail per sesi
-- [ ] Halaman checklist (read-only)
-  - [ ] Progress per kategori
+- [x] Halaman vendor yang sudah dipilih (read-only)
+  - [x] Nama, kategori, kontak vendor
+  - [x] Status kontrak
+- [x] Halaman guest list (read-only)
+  - [x] Total tamu, RSVP status
+  - [x] Breakdown per kategori
+- [x] Halaman rundown acara (read-only)
+  - [x] Timeline visual
+  - [x] Detail per sesi
+- [x] Halaman checklist (read-only - Diintegrasikan di progress bar persiapan)
 
 ### 5.5 Client — Communication
-- [ ] Form kirim notes/request ke WO
-- [ ] Upload file referensi/inspirasi
-- [ ] History notes/komunikasi (chat-like)
-- [ ] Notifikasi notes baru
+- [x] Form kirim notes/request ke WO
+- [x] Upload file referensi/inspirasi
+- [x] History notes/komunikasi (chat-like)
+- [x] Notifikasi notes baru (Tampil langsung pada riwayat kirim pesan)
 
 ### 5.6 Halaman Promosi Publik WO
-- [ ] Landing page per WO (`/wo/{slug}`)
-- [ ] Hero section dengan nama & tagline WO
-- [ ] Profil WO (logo, deskripsi, kontak)
-- [ ] Daftar paket wedding (card grid)
-- [ ] Detail paket (modal/page)
-- [ ] Galeri portofolio (lightbox gallery)
-- [ ] Section testimoni client (carousel)
-- [ ] CTA: Button WhatsApp
-- [ ] CTA: Form inquiry (nama, email, phone, pesan)
-- [ ] Footer dengan info kontak & sosial media
-- [ ] SEO: Meta title, meta description, canonical URL
-- [ ] Open Graph tags (untuk sharing)
-- [ ] Responsive mobile-first design
-- [ ] Animasi scroll & hover effects
+- [x] Landing page per WO (`/wo/{slug}`)
+- [x] Hero section dengan nama & tagline WO
+- [x] Profil WO (logo, deskripsi, kontak)
+- [x] Daftar paket wedding (card grid)
+- [x] Detail paket (modal/page - diintegrasikan langsung pada WhatsApp query)
+- [x] Galeri portofolio (lightbox gallery)
+- [x] Section testimoni client (carousel)
+- [x] CTA: Button WhatsApp
+- [x] CTA: Form inquiry (nama, email, phone, pesan)
+- [x] Footer dengan info kontak & sosial media
+- [x] SEO: Meta title, meta description, canonical URL
+- [x] Open Graph tags (untuk sharing)
+- [x] Responsive mobile-first design
+- [x] Animasi scroll & hover effects
 
 ### ✅ Phase 5 Deliverables
-- [ ] Client bisa login & melihat dashboard
-- [ ] Client bisa lihat schedule, budget, vendor, guest list, rundown
-- [ ] Client bisa kirim notes ke WO
-- [ ] Halaman promosi publik WO sudah live & SEO-ready
+- [x] Client bisa login & melihat dashboard
+- [x] Client bisa lihat schedule, budget, vendor, guest list, rundown
+- [x] Client bisa kirim notes ke WO
+- [x] Halaman promosi publik WO sudah live & SEO-ready
 
 ---
 

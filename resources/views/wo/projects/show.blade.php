@@ -7,7 +7,7 @@
     @endphp
 
     <div class="space-y-6" x-data="{ 
-        activeTab: 'overview',
+        activeTab: '{{ request()->query('tab', 'overview') }}',
         showCreateBudgetModal: false,
         showEditBudgetModal: false,
         budgetEditData: {
@@ -76,6 +76,93 @@
             this.taskEditData.due_date = task.due_date || '';
             this.taskEditData.action = actionUrl;
             this.showEditTaskModal = true;
+        },
+
+        // Guest Modals
+        showCreateGuestModal: false,
+        showEditGuestModal: false,
+        showImportGuestModal: false,
+        guestEditData: {
+            id: '',
+            name: '',
+            category: '',
+            rsvp_status: 'pending',
+            guest_count: 1,
+            seat_number: '',
+            notes: '',
+            action: ''
+        },
+        openEditGuestModal(guest, actionUrl) {
+            this.guestEditData.id = guest.id;
+            this.guestEditData.name = guest.name;
+            this.guestEditData.category = guest.category;
+            this.guestEditData.rsvp_status = guest.rsvp_status;
+            this.guestEditData.guest_count = guest.guest_count;
+            this.guestEditData.seat_number = guest.seat_number || '';
+            this.guestEditData.notes = guest.notes || '';
+            this.guestEditData.action = actionUrl;
+            this.showEditGuestModal = true;
+        },
+        searchGuest: '',
+        filterCategory: '',
+        filterRsvp: '',
+        matchGuest(name, category, rsvp) {
+            const matchesSearch = !this.searchGuest || name.toLowerCase().includes(this.searchGuest.toLowerCase());
+            const matchesCategory = !this.filterCategory || category.toLowerCase() === this.filterCategory.toLowerCase();
+            const matchesRsvp = !this.filterRsvp || rsvp === this.filterRsvp;
+            return matchesSearch && matchesCategory && matchesRsvp;
+        },
+
+        // Rundown Modals & States
+        rundownView: 'timeline',
+        showCreateRundownModal: false,
+        showEditRundownModal: false,
+        rundownEditData: {
+            id: '',
+            time_start: '',
+            time_end: '',
+            activity: '',
+            pic: '',
+            notes: '',
+            action: ''
+        },
+        openEditRundownModal(item, actionUrl) {
+            this.rundownEditData.id = item.id;
+            this.rundownEditData.time_start = item.time_start.substring(0, 5);
+            this.rundownEditData.time_end = item.time_end.substring(0, 5);
+            this.rundownEditData.activity = item.activity;
+            this.rundownEditData.pic = item.pic || '';
+            this.rundownEditData.notes = item.notes || '';
+            this.rundownEditData.action = actionUrl;
+            this.showEditRundownModal = true;
+        },
+
+        // Checklist Modals & States
+        filterChecklistCategory: '',
+        filterChecklistStatus: '',
+        searchChecklist: '',
+        showCreateChecklistModal: false,
+        showEditChecklistModal: false,
+        checklistEditData: {
+            id: '',
+            name: '',
+            category: 'Persiapan',
+            due_date: '',
+            action: ''
+        },
+        openEditChecklistModal(item, actionUrl) {
+            this.checklistEditData.id = item.id;
+            this.checklistEditData.name = item.name;
+            this.checklistEditData.category = item.category;
+            this.checklistEditData.due_date = item.due_date || '';
+            this.checklistEditData.action = actionUrl;
+            this.showEditChecklistModal = true;
+        },
+        matchChecklist(name, category, status) {
+            const matchesSearch = !this.searchChecklist || name.toLowerCase().includes(this.searchChecklist.toLowerCase());
+            const matchesCategory = !this.filterChecklistCategory || category.toLowerCase() === this.filterChecklistCategory.toLowerCase();
+            const matchesStatus = !this.filterChecklistStatus || status === this.filterChecklistStatus;
+            return matchesSearch && matchesCategory && matchesStatus;
         }
     }">
         <!-- Back Link & Header -->
@@ -120,6 +207,8 @@
             <button @click="activeTab = 'vendors'" :class="activeTab === 'vendors' ? 'border-pink-500 text-pink-600 dark:text-pink-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'" class="px-4 py-2.5 font-bold text-xs border-b-2 -mb-[2px] transition-all">Vendor Hub</button>
             <button @click="activeTab = 'guests'" :class="activeTab === 'guests' ? 'border-pink-500 text-pink-600 dark:text-pink-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'" class="px-4 py-2.5 font-bold text-xs border-b-2 -mb-[2px] transition-all">Guest List</button>
             <button @click="activeTab = 'rundown'" :class="activeTab === 'rundown' ? 'border-pink-500 text-pink-600 dark:text-pink-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'" class="px-4 py-2.5 font-bold text-xs border-b-2 -mb-[2px] transition-all">Rundown Hari-H</button>
+            <button @click="activeTab = 'checklist'" :class="activeTab === 'checklist' ? 'border-pink-500 text-pink-600 dark:text-pink-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'" class="px-4 py-2.5 font-bold text-xs border-b-2 -mb-[2px] transition-all">Checklist</button>
+            <button @click="activeTab = 'notes'" :class="activeTab === 'notes' ? 'border-pink-500 text-pink-600 dark:text-pink-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'" class="px-4 py-2.5 font-bold text-xs border-b-2 -mb-[2px] transition-all">Notes & Chat</button>
         </div>
 
         <!-- Tab Contents -->
@@ -481,24 +570,565 @@
                 <span class="inline-block bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 font-bold px-3 py-1 rounded text-[10px] uppercase tracking-wider">Segera Hadir di Tahap 4.4</span>
             </div>
 
-            <!-- Guests Tab Placeholder -->
-            <div x-show="activeTab === 'guests'" class="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 text-center space-y-4" style="display: none;">
-                <div class="w-12 h-12 rounded-full bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center text-pink-500 mx-auto">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <!-- Guests Tab -->
+            <div x-show="activeTab === 'guests'" class="space-y-6" style="display: none;">
+                <!-- Statistics Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Total Tamu Undangan</span>
+                            <span class="text-2xl font-extrabold text-gray-950 dark:text-white mt-1 block">{{ $totalGuestCount }} <span class="text-xs font-normal text-gray-400">Pax</span></span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-955 flex items-center justify-center text-pink-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Konfirmasi Hadir</span>
+                            <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 block">{{ $confirmedGuestCount }} <span class="text-xs font-normal text-gray-400">Pax</span></span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-955 flex items-center justify-center text-emerald-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Tidak Hadir</span>
+                            <span class="text-2xl font-extrabold text-red-600 dark:text-red-400 mt-1 block">{{ $declinedGuestCount }} <span class="text-xs font-normal text-gray-400">Pax</span></span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-955 flex items-center justify-center text-red-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Belum Konfirmasi</span>
+                            <span class="text-2xl font-extrabold text-amber-500 mt-1 block">{{ $pendingGuestCount }} <span class="text-xs font-normal text-gray-400">Pax</span></span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-955 flex items-center justify-center text-amber-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="font-bold text-gray-900 dark:text-white">Guest List</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Manajemen tamu undangan, status kehadiran (RSPV), dan generator QR Code/e-Invitation untuk check-in penerima tamu.</p>
-                <span class="inline-block bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 font-bold px-3 py-1 rounded text-[10px] uppercase tracking-wider">Segera Hadir di Tahap 4.5</span>
+
+                <!-- Category Breakdown list -->
+                @if($categoryBreakdown && count($categoryBreakdown) > 0)
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-2">Rincian Per Kategori</span>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($categoryBreakdown as $catName => $catCount)
+                                <span class="px-3 py-1 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300">
+                                    {{ $catName }}: <strong class="text-pink-500 ml-1">{{ $catCount }} Pax</strong>
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Toolbar & Actions -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <!-- Filters Left -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="relative max-w-xs w-full">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </span>
+                            <input type="text" x-model="searchGuest" placeholder="Cari nama tamu..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <select x-model="filterCategory" class="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            <option value="">Semua Kategori</option>
+                            @foreach($guests->pluck('category')->unique() as $cat)
+                                <option value="{{ $cat }}">{{ $cat }}</option>
+                            @endforeach
+                            <option value="Keluarga Pria">Keluarga Pria</option>
+                            <option value="Keluarga Wanita">Keluarga Wanita</option>
+                            <option value="Teman">Teman</option>
+                            <option value="Kolega">Kolega</option>
+                            <option value="VVIP">VVIP</option>
+                        </select>
+
+                        <select x-model="filterRsvp" class="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            <option value="">Semua RSVP</option>
+                            <option value="pending">Belum Konfirmasi</option>
+                            <option value="confirmed">Hadir</option>
+                            <option value="declined">Tidak Hadir</option>
+                        </select>
+                    </div>
+
+                    <!-- Actions Right -->
+                    <div class="flex items-center gap-2">
+                        <button @click="showImportGuestModal = true" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span>Import CSV</span>
+                        </button>
+                        <a href="{{ route('wo.projects.guests.export', $project) }}" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>Export CSV</span>
+                        </a>
+                        <button @click="showCreateGuestModal = true" class="flex items-center gap-1.5 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-md transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Tambah Tamu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Guests List Table -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/50 dark:bg-gray-900/40 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-50 dark:border-gray-750">
+                                    <th class="py-4 px-6">Nama Tamu</th>
+                                    <th class="py-4 px-6">Kategori</th>
+                                    <th class="py-4 px-6 text-center">RSVP Status</th>
+                                    <th class="py-4 px-6 text-center">Jumlah Tamu</th>
+                                    <th class="py-4 px-6">No Kursi</th>
+                                    <th class="py-4 px-6">Catatan</th>
+                                    <th class="py-4 px-6 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 dark:divide-gray-750 text-xs">
+                                @forelse($guests as $guest)
+                                    <tr x-show="matchGuest('{{ addslashes($guest->name) }}', '{{ addslashes($guest->category) }}', '{{ $guest->rsvp_status }}')" class="hover:bg-gray-50/30 dark:hover:bg-gray-900/10 transition-colors text-gray-700 dark:text-gray-300">
+                                        <td class="py-4 px-6 font-bold text-gray-900 dark:text-white">{{ $guest->name }}</td>
+                                        <td class="py-4 px-6">
+                                            <span class="px-2 py-0.5 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-medium border border-gray-100 dark:border-gray-600">
+                                                {{ $guest->category }}
+                                            </span>
+                                        </td>
+                                        <td class="py-4 px-6 text-center">
+                                            @if($guest->rsvp_status === 'confirmed')
+                                                <span class="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-emerald-100 dark:border-emerald-900/30">Hadir</span>
+                                            @elseif($guest->rsvp_status === 'declined')
+                                                <span class="px-2 py-0.5 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 text-[10px] font-bold border border-red-100 dark:border-red-900/30">Tidak Hadir</span>
+                                            @else
+                                                <span class="px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-100 dark:border-amber-900/30">Belum Konfirmasi</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6 text-center font-semibold">{{ $guest->guest_count }} Pax</td>
+                                        <td class="py-4 px-6 font-mono text-[11px]">{{ $guest->seat_number ?? '-' }}</td>
+                                        <td class="py-4 px-6 max-w-[200px] truncate text-gray-400 dark:text-gray-500" title="{{ $guest->notes }}">{{ $guest->notes ?? '-' }}</td>
+                                        <td class="py-4 px-6 text-right">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <button @click="openEditGuestModal({{ json_encode($guest) }}, '{{ route('wo.projects.guests.update', [$project, $guest]) }}')" class="p-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-colors" title="Edit Tamu">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                </button>
+                                                <form method="POST" action="{{ route('wo.projects.guests.destroy', [$project, $guest]) }}" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors" onclick="return confirm('Apakah Anda yakin ingin menghapus tamu ini?')" title="Hapus Tamu">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-400">
+                                            <svg class="w-12 h-12 text-gray-300 dark:text-gray-650 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Daftar Tamu Masih Kosong</p>
+                                            <p class="text-xs text-gray-400 mt-1">Tambah tamu undangan secara manual atau lakukan import dari file CSV.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <!-- Rundown Tab Placeholder -->
-            <div x-show="activeTab === 'rundown'" class="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 text-center space-y-4" style="display: none;">
-                <div class="w-12 h-12 rounded-full bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center text-pink-500 mx-auto">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            <!-- Rundown Tab -->
+            <div x-show="activeTab === 'rundown'" class="space-y-6" style="display: none;">
+                <!-- Toolbar & Actions -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <!-- Toggle View Left -->
+                    <div class="flex items-center gap-2">
+                        <button @click="rundownView = 'timeline'" :class="rundownView === 'timeline' ? 'bg-pink-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
+                            Visual Timeline
+                        </button>
+                        <button @click="rundownView = 'table'" :class="rundownView === 'table' ? 'bg-pink-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
+                            Daftar Tabel
+                        </button>
+                    </div>
+
+                    <!-- Actions Right -->
+                    <div class="flex items-center gap-2">
+                        <form method="POST" action="{{ route('wo.projects.rundown.generate', $project) }}" class="inline" onsubmit="return confirm('Menerapkan template akan menghapus rundown saat ini. Apakah Anda yakin?')">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                <span>Terapkan Template</span>
+                            </button>
+                        </form>
+                        <a href="{{ route('wo.projects.rundown.print', $project) }}" target="_blank" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                            <span>Cetak Rundown</span>
+                        </a>
+                        <button @click="showCreateRundownModal = true" class="flex items-center gap-1.5 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-md transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Tambah Aktivitas</span>
+                        </button>
+                    </div>
                 </div>
-                <h3 class="font-bold text-gray-900 dark:text-white">Rundown & Susunan Acara</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Penyusunan detail rundown per menit, nama penanggung jawab (PIC) per acara, dan catatan perlengkapan penunjang acara.</p>
-                <span class="inline-block bg-pink-100 text-pink-600 dark:bg-pink-950/40 dark:text-pink-400 font-bold px-3 py-1 rounded text-[10px] uppercase tracking-wider">Segera Hadir di Tahap 4.6</span>
+
+                <!-- Visual Timeline View -->
+                <div x-show="rundownView === 'timeline'" class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                    <div class="relative border-l-2 border-gray-150 dark:border-gray-700 ml-4 md:ml-32 space-y-8 py-4">
+                        @forelse($rundownItems as $item)
+                            <div class="relative">
+                                <!-- Dot indicator -->
+                                <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-pink-500 border-4 border-white dark:border-gray-800 shadow"></div>
+                                
+                                <!-- Time display on desktop (shifts left of timeline) -->
+                                <div class="hidden md:block absolute -left-32 top-1 text-right w-24">
+                                    <span class="font-bold text-gray-900 dark:text-white font-mono text-sm block">
+                                        {{ date('H:i', strtotime($item->time_start)) }}
+                                    </span>
+                                    <span class="text-[10px] text-gray-400 font-mono block">
+                                        s/d {{ date('H:i', strtotime($item->time_end)) }}
+                                    </span>
+                                </div>
+
+                                <!-- Content Card -->
+                                <div class="ml-6 bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                                    <div class="space-y-1">
+                                        <!-- Time display on mobile -->
+                                        <div class="md:hidden flex items-center gap-1 text-[11px] font-bold text-gray-450 font-mono mb-1">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <span>{{ date('H:i', strtotime($item->time_start)) }} - {{ date('H:i', strtotime($item->time_end)) }}</span>
+                                        </div>
+
+                                        <h4 class="font-bold text-gray-900 dark:text-white text-sm">{{ $item->activity }}</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->notes ?? 'Tidak ada catatan tambahan.' }}</p>
+                                    </div>
+
+                                    <div class="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t border-dashed border-gray-100 dark:border-gray-750 md:border-none">
+                                        @if($item->pic)
+                                            <span class="px-2 py-0.5 rounded-lg bg-pink-50 dark:bg-pink-950/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-100 dark:border-pink-900/30">
+                                                PIC: {{ $item->pic }}
+                                            </span>
+                                        @else
+                                            <span class="text-[10px] text-gray-400">Tanpa PIC</span>
+                                        @endif
+
+                                        <div class="flex items-center gap-1">
+                                            <button @click="openEditRundownModal({{ json_encode($item) }}, '{{ route('wo.projects.rundown.update', [$project, $item]) }}')" class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 transition-colors" title="Edit Aktivitas">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+                                            <form method="POST" action="{{ route('wo.projects.rundown.destroy', [$project, $item]) }}" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 hover:bg-red-100 dark:hover:bg-red-950/30 rounded text-red-500 transition-colors" onclick="return confirm('Hapus aktivitas ini dari rundown?')" title="Hapus Aktivitas">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                                <svg class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Belum Ada Rundown Acara</p>
+                                <p class="text-xs text-gray-400 mt-1">Gunakan template standard atau tambahkan aktivitas manual untuk merancang susunan acara.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Table View -->
+                <div x-show="rundownView === 'table'" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden" style="display: none;">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/50 dark:bg-gray-900/40 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-50 dark:border-gray-750">
+                                    <th class="py-4 px-6" style="width: 150px;">Waktu</th>
+                                    <th class="py-4 px-6">Aktivitas / Acara</th>
+                                    <th class="py-4 px-6">PIC</th>
+                                    <th class="py-4 px-6">Catatan / Perlengkapan</th>
+                                    <th class="py-4 px-6 text-right" style="width: 100px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 dark:divide-gray-750 text-xs">
+                                @forelse($rundownItems as $item)
+                                    <tr class="hover:bg-gray-50/30 dark:hover:bg-gray-900/10 transition-colors text-gray-700 dark:text-gray-300">
+                                        <td class="py-4 px-6 font-bold text-gray-900 dark:text-white font-mono text-[13px]">
+                                            {{ date('H:i', strtotime($item->time_start)) }} - {{ date('H:i', strtotime($item->time_end)) }}
+                                        </td>
+                                        <td class="py-4 px-6 font-bold text-gray-900 dark:text-white">{{ $item->activity }}</td>
+                                        <td class="py-4 px-6">
+                                            @if($item->pic)
+                                                <span class="px-2 py-0.5 rounded-lg bg-pink-50 dark:bg-pink-955 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-100 dark:border-pink-900/30">
+                                                    {{ $item->pic }}
+                                                </span>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-6 max-w-[300px] truncate text-gray-400 dark:text-gray-500" title="{{ $item->notes }}">{{ $item->notes ?? '-' }}</td>
+                                        <td class="py-4 px-6 text-right">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <button @click="openEditRundownModal({{ json_encode($item) }}, '{{ route('wo.projects.rundown.update', [$project, $item]) }}')" class="p-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-colors" title="Edit Aktivitas">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                </button>
+                                                <form method="POST" action="{{ route('wo.projects.rundown.destroy', [$project, $item]) }}" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="p-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors" onclick="return confirm('Hapus aktivitas ini dari rundown?')" title="Hapus Aktivitas">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-12 text-center text-gray-500 dark:text-gray-400">
+                                            Belum ada aktivitas rundown terdaftar untuk event ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Checklist Tab -->
+            <div x-show="activeTab === 'checklist'" class="space-y-6" style="display: none;">
+                <!-- Statistics & Progress Bars -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Overall Progress Card -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-base">Progress Keseluruhan</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Persentase penyelesaian seluruh checklist persiapan pernikahan.</p>
+                            </div>
+                            <span class="text-2xl font-extrabold text-pink-500 font-mono">{{ $checklistPercent }}%</span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="space-y-2">
+                            <div class="w-full bg-gray-100 dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+                                <div class="bg-pink-500 h-full rounded-full transition-all duration-500" style="width: {{ $checklistPercent }}%"></div>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] text-gray-450">
+                                <span>{{ $doneChecklistCount }} Selesai</span>
+                                <span>{{ $todoChecklistCount }} Belum Selesai</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress per Kategori Card -->
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-gray-900 dark:text-white text-base">Progress per Kategori</h3>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @forelse($checklistCategories as $catName => $catData)
+                                <div class="space-y-1.5">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $catName }}</span>
+                                        <span class="font-mono text-gray-900 dark:text-white font-bold">{{ $catData['percent'] }}% <span class="text-[10px] font-normal text-gray-400">({{ $catData['done'] }}/{{ $catData['total'] }})</span></span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: {{ $catData['percent'] }}%"></div>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-xs text-gray-400 col-span-2">Belum ada kategori terdaftar.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toolbar & Actions -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <!-- Filters Left -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="relative max-w-xs w-full">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </span>
+                            <input type="text" x-model="searchChecklist" placeholder="Cari nama checklist..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <select x-model="filterChecklistCategory" class="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            <option value="">Semua Kategori</option>
+                            @foreach($checklists->pluck('category')->unique() as $cat)
+                                <option value="{{ $cat }}">{{ $cat }}</option>
+                            @endforeach
+                            <option value="Dokumen">Dokumen</option>
+                            <option value="Pembayaran">Pembayaran</option>
+                            <option value="Persiapan">Persiapan</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+
+                        <select x-model="filterChecklistStatus" class="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            <option value="">Semua Status</option>
+                            <option value="todo">Belum Selesai (Todo)</option>
+                            <option value="done">Selesai (Done)</option>
+                        </select>
+                    </div>
+
+                    <!-- Actions Right -->
+                    <div class="flex items-center gap-2">
+                        <form method="POST" action="{{ route('wo.projects.checklists.generate', $project) }}" class="inline" onsubmit="return confirm('Menerapkan template akan menghapus checklist saat ini. Apakah Anda yakin?')">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold py-2 px-3.5 rounded-xl transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                <span>Terapkan Template</span>
+                            </button>
+                        </form>
+                        <button @click="showCreateChecklistModal = true" class="flex items-center gap-1.5 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-md transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Tambah Item</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checklist Items Grid/List -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden divide-y divide-gray-50 dark:divide-gray-750">
+                    @forelse($checklists as $item)
+                        <div x-show="matchChecklist('{{ addslashes($item->name) }}', '{{ addslashes($item->category) }}', '{{ $item->status }}')" 
+                             class="p-4 flex items-center justify-between gap-4 hover:bg-gray-50/40 dark:hover:bg-gray-900/10 transition-colors"
+                             :class="{ 'opacity-60': '{{ $item->status }}' === 'done' }">
+                            
+                            <div class="flex items-center gap-3 w-full">
+                                <!-- Checkbox Form Toggle -->
+                                <form method="POST" action="{{ route('wo.projects.checklists.toggle', [$project, $item]) }}" class="inline shrink-0">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="checkbox" onchange="this.form.submit()" {{ $item->status === 'done' ? 'checked' : '' }} 
+                                           class="w-4 h-4 text-pink-500 border-gray-300 dark:border-gray-700 rounded focus:ring-pink-500 dark:bg-gray-900 cursor-pointer">
+                                </form>
+
+                                <div class="space-y-0.5 w-full">
+                                    <span class="font-semibold text-gray-900 dark:text-white text-xs md:text-sm block {{ $item->status === 'done' ? 'line-through text-gray-400 dark:text-gray-500' : '' }}">
+                                        {{ $item->name }}
+                                    </span>
+                                    
+                                    <div class="flex flex-wrap items-center gap-2 text-[10px]">
+                                        <span class="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                            {{ $item->category }}
+                                        </span>
+
+                                        @if($item->due_date)
+                                            @php
+                                                $dueDate = \Carbon\Carbon::parse($item->due_date);
+                                                $isOverdue = $dueDate->isPast() && $item->status === 'todo';
+                                            @endphp
+                                            <span class="flex items-center gap-1 font-medium {{ $isOverdue ? 'text-red-500 font-bold' : 'text-gray-400' }}">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                <span>Batas: {{ $dueDate->translatedFormat('d M Y') }} {{ $isOverdue ? '(Terlambat)' : '' }}</span>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button @click="openEditChecklistModal({{ json_encode($item) }}, '{{ route('wo.projects.checklists.update', [$project, $item]) }}')" class="p-1.5 bg-gray-150 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-650 dark:text-gray-300 rounded-lg transition-colors" title="Edit Item">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <form method="POST" action="{{ route('wo.projects.checklists.destroy', [$project, $item]) }}" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-955/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors" onclick="return confirm('Apakah Anda yakin ingin menghapus item checklist ini?')" title="Hapus Item">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+                            <svg class="w-12 h-12 text-gray-300 dark:text-gray-650 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Belum Ada Item Checklist</p>
+                            <p class="text-xs text-gray-400 mt-1">Gunakan template standard atau tambahkan item persiapan manual.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Notes & Chat Tab -->
+            <div x-show="activeTab === 'notes'" class="space-y-6" style="display: none;">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Message Stream List -->
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col h-[500px]">
+                        <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/10">
+                            <h3 class="font-bold text-gray-900 dark:text-white text-sm">Riwayat Komunikasi Klien</h3>
+                        </div>
+
+                        <!-- Notes Stream -->
+                        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                            @forelse($clientNotes as $note)
+                                @php
+                                    $isMe = $note->user_id === auth()->id();
+                                @endphp
+                                <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
+                                    <div class="max-w-[80%] space-y-1">
+                                        <!-- Sender details -->
+                                        <span class="text-[10px] text-gray-400 block {{ $isMe ? 'text-right' : 'text-left' }}">
+                                            {{ $note->user->name }} ({{ strtoupper($note->user->role) }}) • {{ $note->created_at->format('d M H:i') }}
+                                        </span>
+                                        
+                                        <!-- Message bubble -->
+                                        <div class="p-3.5 rounded-2xl text-xs shadow-sm 
+                                            {{ $isMe ? 'bg-pink-600 text-white rounded-tr-none' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none' }}">
+                                            <p class="leading-relaxed whitespace-pre-wrap">{{ $note->message }}</p>
+
+                                            <!-- Attached Reference File -->
+                                            @if($note->file_path)
+                                                <div class="mt-2.5 pt-2.5 border-t {{ $isMe ? 'border-pink-500' : 'border-gray-200 dark:border-gray-600' }} flex items-center justify-between gap-4">
+                                                    <div class="flex items-center gap-1.5 min-w-0">
+                                                        <svg class="w-4 h-4 shrink-0 {{ $isMe ? 'text-pink-200' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                        <span class="truncate block font-bold text-[10px] {{ $isMe ? 'text-pink-100' : 'text-gray-500' }}">{{ $note->file_name ?? 'Attachment' }}</span>
+                                                    </div>
+                                                    <a href="{{ asset('storage/' . $note->file_path) }}" target="_blank" class="shrink-0 text-[10px] font-bold underline {{ $isMe ? 'text-white hover:text-pink-200' : 'text-pink-600 dark:text-pink-400' }}">Unduh</a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-20 text-gray-400 text-xs">
+                                    <svg class="w-12 h-12 text-gray-300 dark:text-gray-650 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    Belum ada pesan/catatan komunikasi dari Klien.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Right: Send New Note Form -->
+                    <div class="lg:col-span-1 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm h-fit space-y-4">
+                        <h3 class="font-bold text-gray-900 dark:text-white text-sm border-b border-gray-50 dark:border-gray-700/50 pb-3">Kirim Tanggapan ke Klien</h3>
+                        
+                        <form method="POST" action="{{ route('wo.projects.notes.store', $project) }}" enctype="multipart/form-data" class="space-y-4">
+                            @csrf
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Pesan / Catatan</label>
+                                <textarea name="message" required placeholder="Ketik pesan tanggapan, update dokumen, kontrak vendor, detail catering..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all h-32 resize-none"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-550 uppercase tracking-wider block mb-1.5">File Lampiran (Opsional)</label>
+                                <input type="file" name="reference_file" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                <p class="text-[9px] text-gray-400 mt-1">Format didukung: Gambar, PDF, Dokumen (Max 5MB).</p>
+                            </div>
+
+                            <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Kirim Balasan
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1008,6 +1638,519 @@
                             </button>
                             <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
                                 Perbarui Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Guest Modal -->
+        <div x-show="showCreateGuestModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showCreateGuestModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Tambah Tamu Undangan</h3>
+                        <button @click="showCreateGuestModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('wo.projects.guests.store', $project) }}" class="p-6 space-y-4">
+                        @csrf
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Tamu</label>
+                            <input type="text" name="name" required placeholder="Contoh: Bpk. Ahmad Heryawan" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Kategori</label>
+                                <select name="category" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="Umum">Umum (Default)</option>
+                                    <option value="Keluarga Pria">Keluarga Pria</option>
+                                    <option value="Keluarga Wanita">Keluarga Wanita</option>
+                                    <option value="Teman">Teman</option>
+                                    <option value="Kolega">Kolega</option>
+                                    <option value="VVIP">VVIP</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Jumlah Pax</label>
+                                <input type="number" name="guest_count" required value="1" min="1" class="w-full bg-gray-55 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Status RSVP</label>
+                                <select name="rsvp_status" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="pending">Belum Konfirmasi</option>
+                                    <option value="confirmed">Hadir</option>
+                                    <option value="declined">Tidak Hadir</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nomor Kursi / Meja</label>
+                                <input type="text" name="seat_number" placeholder="Contoh: A-12 atau VIP-3" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Catatan / Alamat</label>
+                            <textarea name="notes" placeholder="Catatan tambahan seperti diet khusus, rekanan, dll..." class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all h-20 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showCreateGuestModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Simpan Tamu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Guest Modal -->
+        <div x-show="showEditGuestModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showEditGuestModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Edit Tamu Undangan</h3>
+                        <button @click="showEditGuestModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" :action="guestEditData.action" class="p-6 space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Tamu</label>
+                            <input type="text" name="name" x-model="guestEditData.name" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Kategori</label>
+                                <select name="category" x-model="guestEditData.category" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="Umum">Umum</option>
+                                    <option value="Keluarga Pria">Keluarga Pria</option>
+                                    <option value="Keluarga Wanita">Keluarga Wanita</option>
+                                    <option value="Teman">Teman</option>
+                                    <option value="Kolega">Kolega</option>
+                                    <option value="VVIP">VVIP</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Jumlah Pax</label>
+                                <input type="number" name="guest_count" x-model="guestEditData.guest_count" required min="1" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Status RSVP</label>
+                                <select name="rsvp_status" x-model="guestEditData.rsvp_status" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="pending">Belum Konfirmasi</option>
+                                    <option value="confirmed">Hadir</option>
+                                    <option value="declined">Tidak Hadir</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nomor Kursi / Meja</label>
+                                <input type="text" name="seat_number" x-model="guestEditData.seat_number" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Catatan / Alamat</label>
+                            <textarea name="notes" x-model="guestEditData.notes" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all h-20 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showEditGuestModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Perbarui Tamu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Guest Modal -->
+        <div x-show="showImportGuestModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showImportGuestModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Import Daftar Tamu (CSV)</h3>
+                        <button @click="showImportGuestModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('wo.projects.guests.import', $project) }}" enctype="multipart/form-data" class="p-6 space-y-4">
+                        @csrf
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                            <span class="font-bold text-gray-900 dark:text-white block">Petunjuk Format File:</span>
+                            <p>Unggah berkas CSV Anda dengan baris header kolom sebagai berikut:</p>
+                            <code class="block bg-white dark:bg-gray-950 p-2 rounded border border-gray-100 dark:border-gray-800 font-mono text-[10px] text-pink-600 overflow-x-auto">
+                                Nama, Kategori, RSVP Status, Jumlah Tamu, Nomor Kursi, Catatan
+                            </code>
+                            <p class="text-[10px]">Pemisah kolom yang didukung: koma (<code>,</code>) atau titik koma (<code>;</code>).</p>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Pilih File CSV</label>
+                            <input type="file" name="csv_file" required accept=".csv,.txt" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-4 text-xs focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showImportGuestModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Upload & Import
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Rundown Modal -->
+        <div x-show="showCreateRundownModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showCreateRundownModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Tambah Rundown Acara</h3>
+                        <button @click="showCreateRundownModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('wo.projects.rundown.store', $project) }}" class="p-6 space-y-4">
+                        @csrf
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Waktu Mulai</label>
+                                <input type="time" name="time_start" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Waktu Selesai</label>
+                                <input type="time" name="time_end" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Aktivitas / Acara</label>
+                            <input type="text" name="activity" required placeholder="Contoh: Kirab Pengantin Masuk" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">PIC (Penanggung Jawab)</label>
+                            <input type="text" name="pic" placeholder="Contoh: Sarah (WO Team) atau MC" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Catatan / Perlengkapan</label>
+                            <textarea name="notes" placeholder="Tuliskan perlengkapan penunjang, catatan MUA, catering, musik, dll..." class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all h-20 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showCreateRundownModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Simpan Aktivitas
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Rundown Modal -->
+        <div x-show="showEditRundownModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showEditRundownModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Edit Rundown Acara</h3>
+                        <button @click="showEditRundownModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" :action="rundownEditData.action" class="p-6 space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Waktu Mulai</label>
+                                <input type="time" name="time_start" x-model="rundownEditData.time_start" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Waktu Selesai</label>
+                                <input type="time" name="time_end" x-model="rundownEditData.time_end" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Aktivitas / Acara</label>
+                            <input type="text" name="activity" x-model="rundownEditData.activity" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">PIC (Penanggung Jawab)</label>
+                            <input type="text" name="pic" x-model="rundownEditData.pic" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Catatan / Perlengkapan</label>
+                            <textarea name="notes" x-model="rundownEditData.notes" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all h-20 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showEditRundownModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Perbarui Aktivitas
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Checklist Modal -->
+        <div x-show="showCreateChecklistModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showCreateChecklistModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Tambah Item Checklist</h3>
+                        <button @click="showCreateChecklistModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('wo.projects.checklists.store', $project) }}" class="p-6 space-y-4">
+                        @csrf
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Persiapan / Kegiatan</label>
+                            <input type="text" name="name" required placeholder="Contoh: Mengurus KTP & KK ke KUA" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Kategori</label>
+                                <select name="category" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="Persiapan">Persiapan (Default)</option>
+                                    <option value="Dokumen">Dokumen</option>
+                                    <option value="Pembayaran">Pembayaran</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Batas Tanggal (Due Date)</label>
+                                <input type="date" name="due_date" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showCreateChecklistModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Simpan Item
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Checklist Modal -->
+        <div x-show="showEditChecklistModal" 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity bg-gray-950/60 backdrop-blur-sm" @click="showEditChecklistModal = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100 dark:border-gray-700"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    
+                    <div class="px-6 py-5 border-b border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Edit Item Checklist</h3>
+                        <button @click="showEditChecklistModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" :action="checklistEditData.action" class="p-6 space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Nama Persiapan / Kegiatan</label>
+                            <input type="text" name="name" x-model="checklistEditData.name" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Kategori</label>
+                                <select name="category" x-model="checklistEditData.category" required class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                    <option value="Persiapan">Persiapan</option>
+                                    <option value="Dokumen">Dokumen</option>
+                                    <option value="Pembayaran">Pembayaran</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Batas Tanggal (Due Date)</label>
+                                <input type="date" name="due_date" x-model="checklistEditData.due_date" class="w-full bg-gray-50 dark:bg-gray-955 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50">
+                            <button type="button" @click="showEditChecklistModal = false" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all">
+                                Perbarui Item
                             </button>
                         </div>
                     </form>

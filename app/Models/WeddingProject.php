@@ -55,4 +55,14 @@ class WeddingProject extends Model
     {
         return $this->hasMany(RundownItem::class, 'project_id');
     }
+
+    public function checklists(): HasMany
+    {
+        return $this->hasMany(ProjectChecklist::class, 'project_id');
+    }
+
+    public function clientNotes(): HasMany
+    {
+        return $this->hasMany(ClientNote::class, 'project_id');
+    }
 }
