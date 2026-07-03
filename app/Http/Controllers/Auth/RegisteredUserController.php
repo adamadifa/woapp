@@ -18,9 +18,13 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        $plan = $request->query('plan', 'free');
+        if (!in_array($plan, ['free', 'basic', 'pro', 'enterprise'])) {
+            $plan = 'free';
+        }
+        return view('auth.register', compact('plan'));
     }
 
     /**
@@ -35,9 +39,15 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'business_name' => ['required', 'string', 'max:255'],
+            'plan' => ['nullable', 'string', 'in:free,basic,pro,enterprise'],
         ]);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+        $plan = $request->input('plan', 'free');
+        if (!in_array($plan, ['free', 'basic', 'pro', 'enterprise'])) {
+            $plan = 'free';
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $plan) {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -51,7 +61,7 @@ class RegisteredUserController extends Controller
                 'user_id' => $user->id,
                 'business_name' => $request->business_name,
                 'slug' => \Illuminate\Support\Str::slug($request->business_name) . '-' . uniqid(),
-                'subscription_plan' => 'free',
+                'subscription_plan' => $plan,
             ]);
 
             // Set tenant_id to link this user to the newly created WO profile

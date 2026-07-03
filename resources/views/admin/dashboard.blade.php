@@ -74,77 +74,118 @@
             </div>
         </div>
 
-        <!-- Charts Placeholders -->
+        <!-- Charts Section (Real Chart.js Integration) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Chart Card (Total Projects Status) -->
+            <!-- Left Chart Card (Revenue Trend - Line Chart) -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm lg:col-span-2">
                 <div class="flex items-center justify-between mb-6">
-                    <h4 class="font-bold text-sm text-gray-900 dark:text-white">Total Projects Overview</h4>
-                    <div class="flex items-center gap-3 text-xs">
-                        <span class="flex items-center gap-1.5 text-rose-600 font-semibold"><span class="w-2 h-2 rounded-full bg-rose-500"></span> This Year</span>
-                        <span class="flex items-center gap-1.5 text-gray-400"><span class="w-2 h-2 rounded-full bg-gray-300"></span> Last Year</span>
-                    </div>
+                    <h4 class="font-bold text-sm text-gray-900 dark:text-white">Revenue Trend (Last 6 Months)</h4>
+                    <span class="text-xs text-rose-500 font-bold bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1 rounded-lg">IDR / Month</span>
                 </div>
-                <!-- Visual Placeholder for Line Chart -->
-                <div class="h-64 flex flex-col justify-end gap-4 relative">
-                    <!-- Chart grid lines -->
-                    <div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
-                        <div class="border-b border-gray-100 dark:border-gray-700 w-full h-0"></div>
-                        <div class="border-b border-gray-100 dark:border-gray-700 w-full h-0"></div>
-                        <div class="border-b border-gray-100 dark:border-gray-700 w-full h-0"></div>
-                        <div class="border-b border-gray-100 dark:border-gray-700 w-full h-0"></div>
-                    </div>
-                    <!-- Simulated Wave Line Chart (SVG representation) -->
-                    <div class="w-full h-48 relative overflow-hidden">
-                        <svg class="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-                            <path d="M0,45 Q15,20 30,35 T60,15 T90,25 T100,20 L100,50 L0,50 Z" fill="url(#roseGrad)" class="opacity-10" />
-                            <path d="M0,45 Q15,20 30,35 T60,15 T90,25 T100,20" fill="none" stroke="#f43f5e" stroke-width="2" />
-                            <defs>
-                                <linearGradient id="roseGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#f43f5e" />
-                                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </div>
-                    <div class="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 font-semibold px-2">
-                        <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
-                    </div>
+                <div class="h-64 relative">
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
 
-            <!-- Right Chart Card (Device Traffic) -->
+            <!-- Right Chart Card (Subscription Plans Distribution - Doughnut Chart) -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-6">Device Traffic</h4>
-                <!-- Bar Chart Grid Representation -->
-                <div class="h-64 flex items-end justify-between px-2 gap-4">
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                        <div class="w-full bg-rose-50 dark:bg-rose-950/20 rounded-xl h-24 flex items-end justify-center">
-                            <div class="w-full bg-rose-300 dark:bg-rose-700 rounded-xl h-[40%]"></div>
-                        </div>
-                        <span class="text-[10px] text-gray-400 font-semibold">Linux</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                        <div class="w-full bg-rose-50 dark:bg-rose-950/20 rounded-xl h-44 flex items-end justify-center">
-                            <div class="w-full bg-rose-400 dark:bg-rose-600 rounded-xl h-[75%]"></div>
-                        </div>
-                        <span class="text-[10px] text-gray-400 font-semibold">Mac</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                        <div class="w-full bg-rose-50 dark:bg-rose-950/20 rounded-xl h-44 flex items-end justify-center">
-                            <div class="w-full bg-rose-500 rounded-xl h-[95%]"></div>
-                        </div>
-                        <span class="text-[10px] text-gray-400 font-semibold">iOS</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                        <div class="w-full bg-rose-50 dark:bg-rose-950/20 rounded-xl h-36 flex items-end justify-center">
-                            <div class="w-full bg-pink-400 rounded-xl h-[65%]"></div>
-                        </div>
-                        <span class="text-[10px] text-gray-400 font-semibold">Windows</span>
-                    </div>
+                <div class="flex items-center justify-between mb-6">
+                    <h4 class="font-bold text-sm text-gray-900 dark:text-white">Plan Distribution</h4>
+                    <span class="text-xs text-gray-400">Total WOs</span>
+                </div>
+                <div class="h-64 relative flex items-center justify-center">
+                    <canvas id="planChart"></canvas>
                 </div>
             </div>
         </div>
+
+        <!-- Load Chart.js from CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const isDark = document.documentElement.classList.contains('dark') || localStorage.getItem('darkMode') === 'true';
+                const gridColor = isDark ? '#374151' : '#f3f4f6';
+                const textColor = isDark ? '#9ca3af' : '#4b5563';
+
+                // 1. Revenue Line Chart
+                const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctxRevenue, {
+                    type: 'line',
+                    data: {
+                        labels: @json($months),
+                        datasets: [{
+                            label: 'Revenue',
+                            data: @json($monthlyRevenue),
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f43f5e',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: textColor, font: { family: 'Inter', size: 10 } }
+                            },
+                            y: {
+                                grid: { color: gridColor },
+                                ticks: {
+                                    color: textColor,
+                                    font: { family: 'Inter', size: 10 },
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 2. Subscription Plans Doughnut Chart
+                const ctxPlan = document.getElementById('planChart').getContext('2d');
+                new Chart(ctxPlan, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Free', 'Basic', 'Pro', 'Enterprise'],
+                        datasets: [{
+                            data: [
+                                {{ $planDistribution['free'] }},
+                                {{ $planDistribution['basic'] }},
+                                {{ $planDistribution['pro'] }},
+                                {{ $planDistribution['enterprise'] }}
+                            ],
+                            backgroundColor: ['#9ca3af', '#60a5fa', '#f43f5e', '#34d399'],
+                            borderWidth: isDark ? 2 : 1,
+                            borderColor: isDark ? '#1f2937' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: 'Inter', size: 11 },
+                                    boxWidth: 12
+                                }
+                            }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            });
+        </script>
 
         <!-- Recent Transactions/Orders Table -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">

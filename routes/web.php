@@ -5,7 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $plans = \App\Models\Plan::orderBy('price', 'asc')->get();
+    return view('welcome', compact('plans'));
 });
 
 // Central Dashboard Route (Redirects based on role)
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
     Route::resource('subscriptions', \App\Http\Controllers\Admin\SubscriptionController::class)->only(['index', 'show']);
     Route::patch('subscriptions/{subscription}/approve', [\App\Http\Controllers\Admin\SubscriptionController::class, 'approve'])->name('subscriptions.approve');
     Route::patch('subscriptions/{subscription}/reject', [\App\Http\Controllers\Admin\SubscriptionController::class, 'reject'])->name('subscriptions.reject');
+    Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class)->except(['show']);
 
     // Master Data Management
     Route::resource('vendor-categories', \App\Http\Controllers\Admin\VendorCategoryController::class)->except(['create', 'show', 'edit']);
@@ -36,7 +38,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
 });
 
 // Wedding Organizer Panel Routes
-Route::middleware(['auth', 'role:wo,wo_team'])->prefix('wo')->name('wo.')->group(function () {
+Route::middleware(['auth', 'role:wo,wo_team', 'subscription'])->prefix('wo')->name('wo.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\WO\DashboardController::class, 'index'])->name('dashboard');
     
     // Business Profile
@@ -100,6 +102,11 @@ Route::middleware(['auth', 'role:wo,wo_team'])->prefix('wo')->name('wo.')->group
     // Landing Page Customization
     Route::get('landing-page', [\App\Http\Controllers\WO\LandingPageController::class, 'edit'])->name('landing_page.edit');
     Route::put('landing-page', [\App\Http\Controllers\WO\LandingPageController::class, 'update'])->name('landing_page.update');
+
+    // Subscription & Billing
+    Route::get('subscription', [\App\Http\Controllers\WO\SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::get('subscription/checkout/{plan}', [\App\Http\Controllers\WO\SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::post('subscription/checkout/{plan}', [\App\Http\Controllers\WO\SubscriptionController::class, 'store'])->name('subscription.store');
 });
 
 // Client Panel Routes

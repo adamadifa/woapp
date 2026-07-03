@@ -22,6 +22,14 @@ class ClientController extends Controller
             abort(404, 'Data client tidak ditemukan.');
         }
 
+        $wo = $client->woProfile;
+        if ($wo) {
+            $plan = \App\Models\Plan::where('slug', $wo->subscription_plan)->first();
+            if ($plan && !$plan->has_client_dashboard) {
+                abort(403, 'Akses dinonaktifkan. Fitur kolaborasi Client Dashboard tidak aktif untuk paket langganan Wedding Organizer Anda (' . strtoupper($wo->subscription_plan) . '). Silakan hubungi Wedding Organizer Anda.');
+            }
+        }
+
         $project = $client->projects()->first();
         if (!$project) {
             abort(404, 'Wedding project belum dikonfigurasi untuk Anda.');

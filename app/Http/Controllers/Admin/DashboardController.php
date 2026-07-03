@@ -29,12 +29,37 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // 3. Monthly Revenue Data (Last 6 Months)
+        $monthlyRevenue = [];
+        $months = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $months[] = $date->format('M Y');
+            
+            $revenue = Subscription::where('status', 'active')
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('amount');
+            $monthlyRevenue[] = (int) $revenue;
+        }
+
+        // 4. Subscription Plan Distribution
+        $planDistribution = [
+            'free' => WoProfile::where('subscription_plan', 'free')->count(),
+            'basic' => WoProfile::where('subscription_plan', 'basic')->count(),
+            'pro' => WoProfile::where('subscription_plan', 'pro')->count(),
+            'enterprise' => WoProfile::where('subscription_plan', 'enterprise')->count(),
+        ];
+
         return view('admin.dashboard', compact(
             'totalWo',
             'totalClients',
             'totalProjects',
             'totalRevenue',
-            'recentOrders'
+            'recentOrders',
+            'months',
+            'monthlyRevenue',
+            'planDistribution'
         ));
     }
 }

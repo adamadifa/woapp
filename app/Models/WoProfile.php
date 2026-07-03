@@ -17,11 +17,13 @@ class WoProfile extends Model
         'phone',
         'address',
         'subscription_plan',
+        'expired_at',
         'landing_settings',
     ];
 
     protected $casts = [
         'landing_settings' => 'array',
+        'expired_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -57,5 +59,10 @@ class WoProfile extends Model
     public function inquiries(): HasMany
     {
         return $this->hasMany(WoInquiry::class, 'wo_profile_id');
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class, 'wo_profile_id');
     }
 }

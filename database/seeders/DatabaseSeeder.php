@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             MasterTimelineSeeder::class,
             VendorCategorySeeder::class,
             SystemSettingSeeder::class,
+            PlanSeeder::class,
         ]);
     }
 }

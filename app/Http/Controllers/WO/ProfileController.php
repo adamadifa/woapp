@@ -55,6 +55,7 @@ class ProfileController extends Controller
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:2048'], // Max 2MB
+            'delete_logo' => ['nullable', 'boolean'],
         ]);
 
         $data = $request->only(['business_name', 'description', 'phone', 'address']);
@@ -62,7 +63,7 @@ class ProfileController extends Controller
         // Auto-update slug if business name changes and slug is empty/customisable
         $data['slug'] = Str::slug($request->business_name);
         
-        // Handle logo upload
+        // Handle logo upload & deletion
         if ($request->hasFile('logo')) {
             // Delete old logo if exists
             if ($profile->logo) {
@@ -70,6 +71,11 @@ class ProfileController extends Controller
             }
             $path = $request->file('logo')->store('logos', 'public');
             $data['logo'] = $path;
+        } elseif ($request->input('delete_logo') === '1') {
+            if ($profile->logo) {
+                Storage::disk('public')->delete($profile->logo);
+            }
+            $data['logo'] = null;
         }
 
         $profile->update($data);

@@ -56,11 +56,12 @@ class SubscriptionController extends Controller
                 'ends_at' => now()->addDays(30), // Periode langganan default 30 hari
             ]);
 
-            // 2. Update subscription plan on WO Profile
+            // 2. Update subscription plan & expired_at on WO Profile
             $woProfile = $subscription->woProfile;
             if ($woProfile) {
                 $woProfile->update([
                     'subscription_plan' => $subscription->plan,
+                    'expired_at' => $subscription->ends_at,
                 ]);
             }
         });

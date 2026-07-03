@@ -12,9 +12,13 @@ class LandingPageController extends Controller
     /**
      * Show form to edit Landing Page settings.
      */
-    public function edit(): View
+    public function edit(): View|RedirectResponse
     {
         $wo = auth()->user()->woProfile;
+        $plan = \App\Models\Plan::where('slug', $wo->subscription_plan)->first();
+        if ($plan && !$plan->has_custom_landing) {
+            return redirect()->route('wo.subscription.index')->with('error', 'Fitur Custom Landing Page Promosi Publik tidak tersedia untuk paket Anda (' . strtoupper($wo->subscription_plan) . ').');
+        }
         $settings = $wo->landing_settings ?? [];
 
         return view('wo.profile.landing', compact('wo', 'settings'));
@@ -26,6 +30,10 @@ class LandingPageController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $wo = auth()->user()->woProfile;
+        $plan = \App\Models\Plan::where('slug', $wo->subscription_plan)->first();
+        if ($plan && !$plan->has_custom_landing) {
+            return redirect()->route('wo.subscription.index')->with('error', 'Fitur Custom Landing Page Promosi Publik tidak tersedia untuk paket Anda (' . strtoupper($wo->subscription_plan) . ').');
+        }
         $settings = $wo->landing_settings ?? [];
 
         $request->validate([
@@ -35,7 +43,9 @@ class LandingPageController extends Controller
             'about_title' => ['nullable', 'string', 'max:255'],
             'about_description' => ['nullable', 'string'],
             'about_images' => ['nullable', 'array', 'max:3'],
-            'about_images.*' => ['image', 'max:5120'],
+            'about_images.*' => ['nullable', 'image', 'max:5120'],
+            'existing_about_images' => ['nullable', 'array', 'max:3'],
+            'existing_about_images.*' => ['nullable', 'string'],
             'portfolio' => ['nullable', 'array'],
             'portfolio.*.title' => ['required', 'string'],
             'portfolio.*.category' => ['required', 'string'],
@@ -70,12 +80,15 @@ class LandingPageController extends Controller
             $heroImagePath = $file->store('landing_assets', 'public');
         }
 
-        // Handle custom about images upload (multiple)
-        $aboutImagePaths = $settings['about_images'] ?? [];
-        if ($request->hasFile('about_images')) {
-            $aboutImagePaths = []; // reset and overwrite
-            foreach ($request->file('about_images') as $file) {
+        // Handle custom about images upload (multiple slots)
+        $aboutImagePaths = [];
+        $existingAboutImages = $request->input('existing_about_images', []);
+        for ($i = 0; $i < 3; $i++) {
+            if ($request->hasFile("about_images.{$i}")) {
+                $file = $request->file("about_images.{$i}");
                 $aboutImagePaths[] = $file->store('landing_assets', 'public');
+            } elseif (!empty($existingAboutImages[$i])) {
+                $aboutImagePaths[] = $existingAboutImages[$i];
             }
         }
 

@@ -45,8 +45,27 @@
                     <textarea name="company_address" rows="3" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all">{{ $settings['company_address'] ?? '' }}</textarea>
                 </div>
 
+                <!-- Subscription Pricing Settings -->
+                <div class="border-t border-gray-100 dark:border-gray-700 pt-6">
+                    <h3 class="font-bold text-xs text-gray-900 dark:text-white uppercase tracking-wider mb-4">Pengaturan Harga Paket Langganan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Harga Paket Basic (IDR)</label>
+                            <input type="number" name="plan_basic_price" value="{{ $settings['plan_basic_price'] ?? 199000 }}" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Harga Paket Pro (IDR)</label>
+                            <input type="number" name="plan_pro_price" value="{{ $settings['plan_pro_price'] ?? 499000 }}" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Harga Paket Enterprise (IDR)</label>
+                            <input type="number" name="plan_enterprise_price" value="{{ $settings['plan_enterprise_price'] ?? 999000 }}" required class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bank Info -->
-                <div>
+                <div class="border-t border-gray-100 dark:border-gray-700 pt-6">
                     <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Informasi Rekening Bank Pembayaran Manual</label>
                     <textarea name="bank_transfer_info" rows="3" required placeholder="Bank ... Rekening: ... A/n: ..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all">{{ $settings['bank_transfer_info'] ?? '' }}</textarea>
                     <span class="text-[10px] text-gray-400 dark:text-gray-500 mt-1 block">Catatan: Info rekening ini akan ditampilkan pada panel WO saat mereka melakukan pengajuan/upgrade paket langganan manual.</span>

@@ -34,6 +34,15 @@ class TeamController extends Controller
             'sub_role' => ['required', 'in:admin,coordinator,assistant'],
         ]);
 
+        $wo = auth()->user()->woProfile;
+        $plan = \App\Models\Plan::where('slug', $wo->subscription_plan)->first();
+        $maxTeamMembers = $plan ? $plan->max_team_members : 3;
+        $teamCount = User::where('tenant_id', auth()->user()->tenant_id)->where('role', 'wo')->count();
+        
+        if ($maxTeamMembers !== -1 && $teamCount >= $maxTeamMembers) {
+            return redirect()->back()->with('error', "Batas anggota tim untuk paket " . strtoupper($wo->subscription_plan) . " telah tercapai (Maks. {$maxTeamMembers}). Silakan upgrade paket langganan Anda.");
+        }
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,

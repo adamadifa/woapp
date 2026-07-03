@@ -3,6 +3,11 @@
         tab: 'hero',
         portfolio: {{ json_encode($settings['portfolio'] ?? []) }},
         testimonials: {{ json_encode($settings['testimonials'] ?? []) }},
+        about_images: {{ json_encode([
+            array_values($settings['about_images'] ?? [])[0] ?? null,
+            array_values($settings['about_images'] ?? [])[1] ?? null,
+            array_values($settings['about_images'] ?? [])[2] ?? null,
+        ]) }},
         addPortfolio() {
             this.portfolio.push({ title: '', category: 'Decoration', image: '' });
         },
@@ -122,18 +127,32 @@
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1">Upload New About Section Images (Opsional, Maksimal 3 foto untuk diposisikan random)</label>
-                                <input type="file" name="about_images[]" multiple class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
-                                @if(isset($settings['about_images']) && is_array($settings['about_images']) && count($settings['about_images']) > 0)
-                                    <div class="mt-2 space-y-1">
-                                        <span class="text-[10px] text-gray-400 block font-bold">Foto Terunggah Saat Ini:</span>
-                                        <div class="flex gap-2 flex-wrap">
-                                            @foreach($settings['about_images'] as $img)
-                                                <img src="{{ asset('storage/' . $img) }}" class="w-14 h-14 object-cover rounded-full border border-gray-200 shadow-sm">
-                                            @endforeach
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-2">About Section Images (Maksimal 3 foto untuk diposisikan secara acak)</label>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <template x-for="(img, idx) in about_images" :key="idx">
+                                        <div class="bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between space-y-3">
+                                            <div>
+                                                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-2" x-text="'Foto ' + (idx + 1)"></span>
+                                                
+                                                <!-- Preview if image exists -->
+                                                <div x-show="img" class="relative w-20 h-20 group">
+                                                    <img :src="'{{ asset('storage') }}/' + img" class="w-full h-full object-cover rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                                    <button type="button" @click="about_images[idx] = null" class="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors" title="Hapus Foto">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                    </button>
+                                                </div>
+
+                                                <!-- File Input if no image exists -->
+                                                <div x-show="!img">
+                                                    <input type="file" :name="'about_images[' + idx + ']'" class="w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-lg py-1.5 px-2 text-[10px] focus:outline-none text-gray-900 dark:text-white transition-all">
+                                                </div>
+                                            </div>
+
+                                            <!-- Hidden input to track existing image paths -->
+                                            <input type="hidden" :name="'existing_about_images[' + idx + ']'" x-model="about_images[idx]">
                                         </div>
-                                    </div>
-                                @endif
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>

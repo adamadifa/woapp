@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarOpen: true }" :class="{ 'dark': darkMode }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', sidebarOpen: window.innerWidth > 768 }" :class="{ 'dark': darkMode }">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,9 +16,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-200">
-        <div class="min-h-screen flex">
+        <div class="h-screen overflow-hidden flex">
             <!-- Sidebar (Referensi Design 2) -->
-            <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 flex flex-col transition-all duration-300 shrink-0"
+            <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 flex flex-col transition-all duration-300 shrink-0 md:relative fixed z-30 h-full"
                    :class="{ '-ml-64': !sidebarOpen }">
                 <!-- Logo & Brand Header -->
                 <div class="h-16 border-b border-gray-100 dark:border-gray-700 flex items-center px-6 gap-3">
@@ -90,6 +90,9 @@
                     </form>
                 </div>
             </aside>
+
+            <!-- Mobile Sidebar Overlay Backdrop -->
+            <div x-show="sidebarOpen" @click="sidebarOpen = false" class="md:hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-20 transition-opacity" x-cloak></div>
 
             <!-- Main Content Container -->
             <div class="flex-1 flex flex-col min-w-0">

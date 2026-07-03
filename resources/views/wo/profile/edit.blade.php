@@ -24,24 +24,31 @@
                 @method('PUT')
 
                 <!-- Logo Section -->
-                <div class="p-6 md:p-8 space-y-6">
+                <div class="p-6 md:p-8 space-y-6" x-data="{ logoUrl: '{{ $profile->logo ? asset('storage/' . $profile->logo) : '' }}', deleteLogo: false }">
                     <h3 class="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-wider text-[11px]">Logo Bisnis</h3>
                     <div class="flex flex-col sm:flex-row items-center gap-6">
                         <div class="relative w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 flex items-center justify-center text-gray-400 shrink-0">
-                            @if($profile->logo)
-                                <img src="{{ asset('storage/' . $profile->logo) }}" alt="Logo" class="w-full h-full object-cover">
-                            @else
+                            <template x-if="logoUrl && !deleteLogo">
+                                <div class="relative w-full h-full group">
+                                    <img :src="logoUrl" alt="Logo" class="w-full h-full object-cover">
+                                    <button type="button" @click="deleteLogo = true" class="absolute top-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors" title="Hapus Logo">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </template>
+                            <template x-if="!logoUrl || deleteLogo">
                                 <svg class="w-8 h-8 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            @endif
+                            </template>
                         </div>
                         <div class="space-y-2 text-center sm:text-left">
                             <label class="inline-block bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/30 dark:hover:bg-pink-900/40 text-pink-600 dark:text-pink-400 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border border-pink-100 dark:border-pink-900/50">
                                 <span>Pilih File Logo</span>
-                                <input type="file" name="logo" class="hidden" accept="image/*">
+                                <input type="file" name="logo" class="hidden" accept="image/*" @change="deleteLogo = false; logoUrl = URL.createObjectURL($event.target.files[0])">
                             </label>
                             <p class="text-[10px] text-gray-400 dark:text-gray-500">Format yang direkomendasikan: JPG, PNG (Max. 2MB). Rasio 1:1.</p>
                         </div>
                     </div>
+                    <input type="hidden" name="delete_logo" :value="deleteLogo ? '1' : '0'">
                 </div>
 
                 <!-- Form Fields -->

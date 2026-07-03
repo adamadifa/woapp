@@ -8,6 +8,29 @@
                 </h2>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Selamat datang kembali! Berikut adalah ringkasan perkembangan bisnis persiapan pernikahan Anda.</p>
             </div>
+            
+            @php
+                $woProfile = auth()->user()->woProfile;
+            @endphp
+            @if($woProfile)
+                <a href="{{ route('wo.subscription.index') }}" class="flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-2.5 rounded-2xl shadow-sm hover:border-pink-500/30 transition-all group shrink-0">
+                    <div class="w-8 h-8 rounded-xl bg-pink-500/10 text-pink-500 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.746 3.746 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg>
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-gray-900 dark:text-white">
+                            Paket: <span class="uppercase text-pink-500">{{ $woProfile->subscription_plan }}</span>
+                        </p>
+                        <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                            @if($woProfile->expired_at)
+                                Berlaku s.d: <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $woProfile->expired_at->format('d M Y') }}</span>
+                            @else
+                                Berlaku s.d: <span class="font-semibold text-emerald-500">Selamanya</span>
+                            @endif
+                        </p>
+                    </div>
+                </a>
+            @endif
         </div>
 
         <!-- Quick Stats Grid -->

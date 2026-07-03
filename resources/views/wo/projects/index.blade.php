@@ -119,7 +119,10 @@
 
                     <!-- Card Actions -->
                     <div class="px-6 py-4 bg-gray-50/50 dark:bg-gray-800/40 border-t border-gray-50 dark:border-gray-700/50 flex items-center justify-between">
-                        <a href="{{ route('wo.projects.show', $project) }}" class="text-[10px] text-pink-600 dark:text-pink-400 font-bold hover:underline">Kelola Detail →</a>
+                        <a href="{{ route('wo.projects.show', $project) }}" class="inline-flex items-center gap-1 bg-pink-500 hover:bg-pink-600 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg shadow-sm shadow-pink-100 dark:shadow-none transition-all transform hover:-translate-y-0.5">
+                            <span>Kelola Detail</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                        </a>
 
                         <div class="flex items-center gap-1.5">
                             <form method="POST" action="{{ route('wo.projects.duplicate', $project) }}" class="inline">

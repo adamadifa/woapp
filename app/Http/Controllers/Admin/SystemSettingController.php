@@ -30,9 +30,15 @@ class SystemSettingController extends Controller
             'company_phone' => 'required|string|max:50',
             'company_address' => 'required|string',
             'bank_transfer_info' => 'required|string',
+            'plan_basic_price' => 'required|numeric|min:0',
+            'plan_pro_price' => 'required|numeric|min:0',
+            'plan_enterprise_price' => 'required|numeric|min:0',
         ]);
 
-        foreach ($request->only(['app_name', 'company_email', 'company_phone', 'company_address', 'bank_transfer_info']) as $key => $val) {
+        foreach ($request->only([
+            'app_name', 'company_email', 'company_phone', 'company_address', 'bank_transfer_info',
+            'plan_basic_price', 'plan_pro_price', 'plan_enterprise_price'
+        ]) as $key => $val) {
             SystemSetting::setValue($key, $val);
         }
 

@@ -39,8 +39,6 @@ class WeddingProjectController extends Controller
     }
 
     /**
-     * Store a newly created wedding project.
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -51,6 +49,15 @@ class WeddingProjectController extends Controller
             'total_budget' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:planning,ongoing,completed,cancelled'],
         ]);
+
+        $wo = auth()->user()->woProfile;
+        $plan = \App\Models\Plan::where('slug', $wo->subscription_plan)->first();
+        $maxProjects = $plan ? $plan->max_projects : 1;
+        $activeProjectsCount = $wo->projects()->whereIn('status', ['planning', 'ongoing'])->count();
+        
+        if ($maxProjects !== -1 && $activeProjectsCount >= $maxProjects) {
+            return redirect()->back()->with('error', "Batas proyek aktif untuk paket " . strtoupper($wo->subscription_plan) . " telah tercapai (Maks. {$maxProjects}). Silakan upgrade paket langganan Anda.");
+        }
 
         WeddingProject::create($request->all());
 
