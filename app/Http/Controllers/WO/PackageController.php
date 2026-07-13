@@ -17,8 +17,9 @@ class PackageController extends Controller
     public function index(): View
     {
         // Multitenantable trait automatically applies TenantScope (scopes by Auth::user()->tenant_id)
-        $packages = WeddingPackage::orderBy('created_at', 'desc')->paginate(9);
-        return view('wo.packages.index', compact('packages'));
+        $packages = WeddingPackage::with('vendors')->orderBy('created_at', 'desc')->paginate(9);
+        $vendors = \App\Models\Vendor::where('status', 'active')->orderBy('name')->get();
+        return view('wo.packages.index', compact('packages', 'vendors'));
     }
 
     /**
@@ -34,6 +35,8 @@ class PackageController extends Controller
             'items.*' => ['required', 'string'],
             'images' => ['nullable', 'array'],
             'images.*' => ['image', 'max:2048'],
+            'vendor_ids' => ['nullable', 'array'],
+            'vendor_ids.*' => ['exists:vendors,id'],
         ]);
 
         $data = $request->only(['name', 'description', 'price']);
@@ -52,7 +55,9 @@ class PackageController extends Controller
         }
         $data['images'] = $imagePaths;
 
-        WeddingPackage::create($data);
+        $package = WeddingPackage::create($data);
+
+        $package->vendors()->sync($request->input('vendor_ids', []));
 
         return redirect()->route('wo.packages.index')->with('success', 'Paket wedding berhasil ditambahkan.');
     }
@@ -70,6 +75,8 @@ class PackageController extends Controller
             'items.*' => ['required', 'string'],
             'images' => ['nullable', 'array'],
             'images.*' => ['image', 'max:2048'],
+            'vendor_ids' => ['nullable', 'array'],
+            'vendor_ids.*' => ['exists:vendors,id'],
         ]);
 
         $data = $request->only(['name', 'description', 'price']);
@@ -94,9 +101,9 @@ class PackageController extends Controller
                 $imagePaths[] = $image->store('packages', 'public');
             }
         }
-        $data['images'] = $imagePaths;
-
         $package->update($data);
+
+        $package->vendors()->sync($request->input('vendor_ids', []));
 
         return redirect()->route('wo.packages.index')->with('success', 'Paket wedding berhasil diperbarui.');
     }

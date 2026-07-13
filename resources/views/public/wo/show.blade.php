@@ -44,6 +44,7 @@
         <nav class="nav-links-container hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-white/95 transition-colors duration-300">
             <a href="#about" class="nav-link hover:text-wo-rose transition-colors">Tentang Kami</a>
             <a href="#packages" class="nav-link hover:text-wo-rose transition-colors">Paket Wedding</a>
+            <a href="#dream-wedding" class="nav-link hover:text-wo-rose transition-colors">Rancang Budget</a>
             <a href="#portfolio" class="nav-link hover:text-wo-rose transition-colors">Portofolio</a>
             <a href="#testimonials" class="nav-link hover:text-wo-rose transition-colors">Testimoni</a>
             <a href="#contact" class="nav-link hover:text-wo-rose transition-colors">Kontak</a>
@@ -87,7 +88,7 @@
         <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&q=80&w=300" alt="" class="w-full h-full object-cover">
     </div>
     <div class="hidden lg:block absolute right-8 top-1/4 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl">
-        <img src="https://images.unsplash.com/photo-1519225495810-7517c696565a?auto=format&fit=crop&q=80&w=300" alt="" class="w-full h-full object-cover">
+        <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=300" alt="" class="w-full h-full object-cover">
     </div>
 </section>
 
@@ -180,9 +181,240 @@
                 <div class="col-span-3 text-center py-12 text-wo-brown-light">Belum ada paket promosi aktif saat ini.</div>
             @endforelse
         </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- DREAM WEDDING CALCULATOR & PLANNER                            -->
+<!-- ============================================================ -->
+<section id="dream-wedding" x-data="weddingPlanner()" class="bg-wo-rose-bg/20 py-16 md:py-24 border-y border-wo-rose-light/10">
+    <div class="max-w-6xl mx-auto px-6 space-y-12">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <p class="font-script text-2xl text-wo-rose text-center">Dream Wedding Planner</p>
+            <h2 class="text-3xl md:text-4xl font-bold font-serif text-wo-brown text-center">Rancang Pernikahan Impian Anda</h2>
+            <p class="text-xs text-wo-brown-light leading-relaxed text-center">
+                Pilih kombinasi vendor terbaik Anda sendiri, tentukan paket/variasi, dan hitung estimasi total budget secara langsung.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <!-- Left: Selection Form -->
+            <div class="lg:col-span-7 bg-white p-6 md:p-8 rounded-3xl shadow-md border border-gray-100/50 space-y-6">
+                
+                <!-- Category Selectors -->
+                <div class="space-y-5">
+                    @forelse($vendors->groupBy('category') as $category => $categoryVendors)
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-wo-brown uppercase tracking-wider block">{{ $category }}</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Select Vendor Dropdown -->
+                                <select 
+                                    @change="selectVendor('{{ $category }}', $event.target.value)"
+                                    class="w-full bg-wo-cream border border-wo-rose-light/20 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-wo-rose focus:border-wo-rose focus:outline-none text-wo-brown-text transition-all"
+                                >
+                                    <option value="">-- Pilih Vendor {{ $category }} --</option>
+                                    @foreach($categoryVendors as $v)
+                                        <option value="{{ $v->id }}">{{ $v->name }}</option>
+                                    @endforeach
+                                </select>
+
+                                <!-- Select Package Dropdown (if vendor has packages) -->
+                                <div x-show="selectedVendors['{{ $category }}'] && selectedVendors['{{ $category }}'].packages && selectedVendors['{{ $category }}'].packages.length > 0">
+                                    <select 
+                                        @change="selectPackage('{{ $category }}', $event.target.value)"
+                                        class="w-full bg-wo-cream border border-wo-rose-light/20 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-wo-rose focus:border-wo-rose focus:outline-none text-wo-brown-text transition-all"
+                                    >
+                                        <option value="">-- Pilih Variasi/Paket --</option>
+                                        <template x-for="pkg in selectedVendors['{{ $category }}'] ? selectedVendors['{{ $category }}'].packages : []">
+                                            <option :value="pkg.name" x-text="pkg.name + ' (Rp ' + formatNumber(pkg.price) + ')'"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-6 text-xs text-wo-brown-light">Belum ada vendor terdaftar untuk WO ini.</div>
+                    @endforelse
+                </div>
+
+                <!-- Custom Items Section -->
+                <div class="pt-6 border-t border-dashed border-gray-100 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-bold text-wo-brown uppercase tracking-wider">Item Tambahan Lainnya (Opsional)</label>
+                        <button type="button" @click="addCustomItem()" class="text-xs text-wo-rose font-bold hover:underline">
+                            + Tambah Item
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <template x-for="(item, index) in customItems" :key="index">
+                            <div class="flex gap-2 items-center">
+                                <input type="text" x-model="item.name" placeholder="cth: Sewa Gedung / Sewa Mobil" class="flex-1 bg-wo-cream border border-wo-rose-light/20 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-wo-rose focus:border-wo-rose text-wo-brown-text focus:outline-none transition-all">
+                                <input type="number" x-model.number="item.price" placeholder="Harga (Rp)" class="w-32 bg-wo-cream border border-wo-rose-light/20 rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-wo-rose focus:border-wo-rose text-wo-brown-text focus:outline-none transition-all">
+                                <button type="button" @click="removeCustomItem(index)" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                    ✕
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Budget Summary -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-wo-rose to-rose-600 p-6 md:p-8 rounded-3xl shadow-xl text-white space-y-6 lg:sticky lg:top-24">
+                <h3 class="font-bold text-lg font-serif tracking-wide border-b border-white/20 pb-3">Ringkasan Budget</h3>
+
+                <!-- Selected Vendors List -->
+                <div class="space-y-3 text-xs min-h-[150px]">
+                    <!-- Selected Vendors -->
+                    <template x-for="(data, category) in selectedVendors" :key="category">
+                        <div x-show="data" class="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5">
+                            <div>
+                                <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-75 block" x-text="category"></span>
+                                <span class="font-bold block" x-text="data.name"></span>
+                                <span x-show="data.selectedPackage" class="text-[10px] opacity-90 block" x-text="'Variasi: ' + data.selectedPackage"></span>
+                            </div>
+                            <span class="font-extrabold" x-text="'Rp ' + formatNumber(data.price)"></span>
+                        </div>
+                    </template>
+
+                    <!-- Custom Items -->
+                    <template x-for="(item, index) in customItems" :key="index">
+                        <div x-show="item.name" class="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5">
+                            <div>
+                                <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-75 block">Kustom</span>
+                                <span class="font-bold block" x-text="item.name"></span>
+                            </div>
+                            <span class="font-extrabold" x-text="'Rp ' + formatNumber(item.price)"></span>
+                        </div>
+                    </template>
+
+                    <!-- Empty state -->
+                    <div x-show="Object.keys(selectedVendors).length === 0 && customItems.length === 0" class="text-center py-12 opacity-80 text-xs italic">
+                        Belum ada vendor/item yang dipilih.
+                    </div>
+                </div>
+
+                <!-- Total Estimation -->
+                <div class="pt-6 border-t border-white/20 flex flex-col gap-1">
+                    <span class="text-xs uppercase tracking-wider font-semibold opacity-75">Estimasi Total Budget:</span>
+                    <span class="text-3xl font-extrabold tracking-tight" x-text="'Rp ' + formatNumber(totalBudget)"></span>
+                </div>
+
+                <!-- Action Button -->
+                <a 
+                    :href="whatsappUrl"
+                    target="_blank"
+                    class="block w-full text-center bg-white text-wo-rose font-bold text-xs py-3.5 rounded-full shadow-lg uppercase tracking-wider hover:bg-gray-50 transition-colors"
+                >
+                    Konsultasikan Rencana via WhatsApp
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 
+<script>
+    function weddingPlanner() {
+        return {
+            allVendors: @json($vendors),
+            selectedVendors: {},
+            customItems: [],
+            whatsappUrl: '#',
+            
+            init() {
+                this.updateWhatsappUrl();
+                this.$watch('selectedVendors', () => this.updateWhatsappUrl());
+                this.$watch('customItems', () => this.updateWhatsappUrl());
+            },
+            
+            selectVendor(category, vendorId) {
+                if (!vendorId) {
+                    delete this.selectedVendors[category];
+                    this.selectedVendors = { ...this.selectedVendors };
+                    return;
+                }
+                
+                const vendor = this.allVendors.find(v => v.id == vendorId);
+                if (vendor) {
+                    this.selectedVendors[category] = {
+                        id: vendor.id,
+                        name: vendor.name,
+                        price: parseFloat(vendor.price || 0),
+                        packages: vendor.packages || [],
+                        selectedPackage: null
+                    };
+                    
+                    if (vendor.packages && vendor.packages.length > 0) {
+                        this.selectedVendors[category].selectedPackage = vendor.packages[0].name;
+                        this.selectedVendors[category].price = parseFloat(vendor.packages[0].price || 0);
+                    }
+                    
+                    this.selectedVendors = { ...this.selectedVendors };
+                }
+            },
+            
+            selectPackage(category, packageName) {
+                const vendorData = this.selectedVendors[category];
+                if (vendorData) {
+                    const pkg = vendorData.packages.find(p => p.name === packageName);
+                    if (pkg) {
+                        vendorData.selectedPackage = pkg.name;
+                        vendorData.price = parseFloat(pkg.price || 0);
+                    } else {
+                        vendorData.selectedPackage = null;
+                        const originalVendor = this.allVendors.find(v => v.id == vendorData.id); // fallback to default
+                        vendorData.price = originalVendor ? parseFloat(originalVendor.price || 0) : 0;
+                    }
+                    this.selectedVendors = { ...this.selectedVendors };
+                }
+            },
+            
+            addCustomItem() {
+                this.customItems.push({ name: '', price: 0 });
+            },
+            
+            removeCustomItem(index) {
+                this.customItems.splice(index, 1);
+            },
+            
+            get totalBudget() {
+                let total = 0;
+                for (const cat in this.selectedVendors) {
+                    total += this.selectedVendors[cat].price;
+                }
+                this.customItems.forEach(item => {
+                    total += parseFloat(item.price || 0);
+                });
+                return total;
+            },
+            
+            formatNumber(num) {
+                return new Intl.NumberFormat('id-ID').format(num);
+            },
+            
+            updateWhatsappUrl() {
+                let text = `Halo {{ $wo->business_name }}, saya ingin merencanakan Dream Wedding saya dengan rincian berikut:\n\n`;
+                
+                for (const cat in this.selectedVendors) {
+                    const v = this.selectedVendors[cat];
+                    text += `- *${cat}*: ${v.name} ${v.selectedPackage ? '('+v.selectedPackage+')' : ''} (Rp ${this.formatNumber(v.price)})\n`;
+                }
+                
+                this.customItems.forEach(item => {
+                    if (item.name) {
+                        text += `- *Kustom*: ${item.name} (Rp ${this.formatNumber(item.price)})\n`;
+                    }
+                });
+                
+                text += `\n*Estimasi Total Budget*: Rp ${this.formatNumber(this.totalBudget)}`;
+                
+                this.whatsappUrl = `https://wa.me/{{ $waPhone }}?text=${encodeURIComponent(text)}`;
+            }
+        }
+    }
+</script>
 
 <!-- ============================================================ -->
 <!-- PORTFOLIO GALLERY                                              -->

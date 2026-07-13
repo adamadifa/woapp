@@ -16,14 +16,16 @@ class Vendor extends Model
         'category',
         'phone',
         'address',
-        'price_range',
+        'price',
         'rating',
         'status',
         'notes',
+        'packages',
     ];
 
     protected $casts = [
         'rating' => 'decimal:2',
+        'packages' => 'array',
     ];
 
     public function woProfile(): BelongsTo

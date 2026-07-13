@@ -31,4 +31,9 @@ class WeddingPackage extends Model
     {
         return $this->belongsTo(WoProfile::class);
     }
+
+    public function vendors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Vendor::class, 'package_vendor', 'wedding_package_id', 'vendor_id');
+    }
 }

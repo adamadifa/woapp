@@ -10,6 +10,7 @@
             description: '',
             price: '',
             is_active: true,
+            vendor_ids: [],
             action: ''
         },
         openEditModal(pkg, actionUrl) {
@@ -20,6 +21,7 @@
             this.editData.is_active = pkg.is_active;
             this.editData.action = actionUrl;
             this.editItems = pkg.items ? [...pkg.items] : [''];
+            this.editData.vendor_ids = pkg.vendors ? pkg.vendors.map(v => v.id) : [];
             this.showEditModal = true;
         }
     }">
@@ -92,6 +94,20 @@
                                     @if(count($pkg->items) > 3)
                                         <span class="px-2 py-0.5 rounded bg-pink-50 dark:bg-pink-950/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-100 dark:border-pink-900/30">+{{ count($pkg->items) - 3 }} Lainnya</span>
                                     @endif
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Pilihan Vendor Terkait -->
+                        @if($pkg->vendors->isNotEmpty())
+                            <div class="pt-3 border-t border-gray-50 dark:border-gray-700/50 space-y-1.5">
+                                <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Pilihan Vendor Terkait:</span>
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($pkg->vendors->groupBy('category') as $category => $categoryVendors)
+                                        <span class="px-2 py-0.5 rounded bg-pink-50/50 dark:bg-pink-950/10 text-pink-600 dark:text-pink-400 text-[10px] font-medium border border-pink-100/30 dark:border-pink-900/10 truncate max-w-[200px]" title="{{ $category }}: {{ $categoryVendors->pluck('name')->implode(', ') }}">
+                                            <strong>{{ $category }}</strong>: {{ $categoryVendors->count() }}
+                                        </span>
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
@@ -203,6 +219,28 @@
                             </button>
                         </div>
 
+                        <!-- Pilihan Vendor Terkait -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Pilihan Vendor Terkait (Bisa Dipilih)</label>
+                            <div class="p-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 space-y-4 max-h-48 overflow-y-auto">
+                                @forelse($vendors->groupBy('category') as $category => $categoryVendors)
+                                    <div>
+                                        <span class="text-[10px] font-extrabold text-pink-600 dark:text-pink-400 uppercase tracking-wider block mb-2">{{ $category }}</span>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            @foreach($categoryVendors as $v)
+                                                <label class="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 cursor-pointer">
+                                                    <input type="checkbox" name="vendor_ids[]" value="{{ $v->id }}" class="rounded border-gray-300 dark:border-gray-700 text-pink-600 focus:ring-pink-500 mr-2">
+                                                    <span>{{ $v->name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @empty
+                                    <span class="text-xs text-gray-400">Belum ada vendor terdaftar. Tambahkan vendor terlebih dahulu.</span>
+                                @endforelse
+                            </div>
+                        </div>
+
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Foto Paket (Max 2MB)</label>
                             <input type="file" name="images[]" multiple class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2 px-4 text-xs focus:outline-none text-gray-900 dark:text-white transition-all">
@@ -292,6 +330,28 @@
                             <button type="button" @click="editItems.push('')" class="text-xs text-pink-600 dark:text-pink-400 font-bold hover:underline flex items-center gap-1 mt-1">
                                 + Tambah Item Baru
                             </button>
+                        </div>
+
+                        <!-- Pilihan Vendor Terkait -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Pilihan Vendor Terkait (Bisa Dipilih)</label>
+                            <div class="p-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-2xl border border-gray-100 dark:border-gray-700/50 space-y-4 max-h-48 overflow-y-auto">
+                                @forelse($vendors->groupBy('category') as $category => $categoryVendors)
+                                    <div>
+                                        <span class="text-[10px] font-extrabold text-pink-600 dark:text-pink-400 uppercase tracking-wider block mb-2">{{ $category }}</span>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            @foreach($categoryVendors as $v)
+                                                <label class="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 cursor-pointer">
+                                                    <input type="checkbox" name="vendor_ids[]" value="{{ $v->id }}" x-model="editData.vendor_ids" class="rounded border-gray-300 dark:border-gray-700 text-pink-600 focus:ring-pink-500 mr-2">
+                                                    <span>{{ $v->name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @empty
+                                    <span class="text-xs text-gray-400">Belum ada vendor terdaftar. Tambahkan vendor terlebih dahulu.</span>
+                                @endforelse
+                            </div>
                         </div>
 
                         <div>

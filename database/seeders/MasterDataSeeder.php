@@ -57,7 +57,12 @@ class MasterDataSeeder extends Seeder
                 'category' => 'Catering',
                 'phone' => '081299998888',
                 'address' => 'Jl. Makanan Enak No. 12, Jakarta',
-                'price_range' => 'Rp 50.000 - Rp 120.000 / pax',
+                'price' => 75000,
+                'packages' => [
+                    ['name' => 'Paket Silver (500 Pax)', 'price' => 37500000],
+                    ['name' => 'Paket Gold (1000 Pax)', 'price' => 75000000],
+                    ['name' => 'Paket Platinum (1500 Pax)', 'price' => 112500000],
+                ],
                 'rating' => 4.8,
                 'status' => 'active',
             ]);
@@ -68,7 +73,12 @@ class MasterDataSeeder extends Seeder
                 'category' => 'MUA',
                 'phone' => '081277776666',
                 'address' => 'Mall Cantik Lt. 2, Jakarta',
-                'price_range' => 'Rp 5.000.000 - Rp 15.000.000',
+                'price' => 10000000,
+                'packages' => [
+                    ['name' => 'Make Up Bride Only', 'price' => 5000000],
+                    ['name' => 'Make Up Bride & Groom', 'price' => 7500000],
+                    ['name' => 'Make Up Keluarga (Lengkap)', 'price' => 12000000],
+                ],
                 'rating' => 4.9,
                 'status' => 'active',
             ]);

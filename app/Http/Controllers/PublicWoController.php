@@ -19,6 +19,9 @@ class PublicWoController extends Controller
         
         // Fetch active packages
         $packages = $wo->packages()->where('is_active', true)->get();
+        
+        // Fetch active vendors
+        $vendors = $wo->vendors()->where('status', 'active')->get();
 
         // SEO and Meta details
         $seoTitle = "{$wo->business_name} - Wedding Organizer Terbaik";
@@ -74,15 +77,15 @@ class PublicWoController extends Controller
             shuffle($commitmentImages);
         }
         $commitmentImage1 = isset($commitmentImages[0]) ? asset('storage/' . $commitmentImages[0]) : 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&q=80&w=400';
-        $commitmentImage2 = isset($commitmentImages[1]) ? asset('storage/' . $commitmentImages[1]) : 'https://images.unsplash.com/photo-1519225495810-7517c696565a?auto=format&fit=crop&q=80&w=200';
-        $commitmentImage3 = isset($commitmentImages[2]) ? asset('storage/' . $commitmentImages[2]) : 'https://images.unsplash.com/photo-1507504038482-76210f5c035a?auto=format&fit=crop&q=80&w=200';
+        $commitmentImage2 = isset($commitmentImages[1]) ? asset('storage/' . $commitmentImages[1]) : 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=200';
+        $commitmentImage3 = isset($commitmentImages[2]) ? asset('storage/' . $commitmentImages[2]) : 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=200';
 
         // Mock portfolio items
         $portfolio = !empty($settings['portfolio']) ? $settings['portfolio'] : [
             [
                 'title' => 'Rustic Chic Barn Wedding',
                 'category' => 'Decoration',
-                'image' => 'https://images.unsplash.com/photo-1519225495810-7517c696565a?auto=format&fit=crop&q=80&w=600',
+                'image' => 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600',
             ],
             [
                 'title' => 'Traditional Sundanese Ceremony',
@@ -102,7 +105,7 @@ class PublicWoController extends Controller
             [
                 'title' => 'Outdoor Garden Procession',
                 'category' => 'Ceremony',
-                'image' => 'https://images.unsplash.com/photo-1507504038482-76210f5c035a?auto=format&fit=crop&q=80&w=600',
+                'image' => 'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&q=80&w=600',
             ],
             [
                 'title' => 'Luxury Floral Stage Decor',
@@ -133,7 +136,10 @@ class PublicWoController extends Controller
             ],
         ];
 
-        return view('public.wo.show', compact(
+        $agent = new \Jenssegers\Agent\Agent();
+        $viewName = ($agent->isMobile() || $agent->isTablet()) ? 'public.wo.mobile_show' : 'public.wo.show';
+
+        return view($viewName, compact(
             'wo', 
             'packages', 
             'seoTitle', 
@@ -164,7 +170,8 @@ class PublicWoController extends Controller
             'commitmentDescription',
             'commitmentImage1',
             'commitmentImage2',
-            'commitmentImage3'
+            'commitmentImage3',
+            'vendors'
         ));
     }
 

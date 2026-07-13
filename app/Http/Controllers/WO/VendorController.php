@@ -35,13 +35,23 @@ class VendorController extends Controller
             'category' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string'],
-            'price_range' => ['nullable', 'string', 'max:255'],
+            'price' => ['nullable', 'numeric', 'min:0'],
             'rating' => ['required', 'numeric', 'min:1', 'max:5'],
             'status' => ['required', 'in:active,inactive'],
             'notes' => ['nullable', 'string'],
+            'packages' => ['nullable', 'array'],
+            'packages.*.name' => ['nullable', 'string', 'max:255'],
+            'packages.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        Vendor::create($request->all());
+        $data = $request->all();
+        if ($request->has('packages')) {
+            $data['packages'] = array_values(array_filter($request->input('packages', []), function ($pkg) {
+                return !empty(trim($pkg['name'] ?? ''));
+            }));
+        }
+
+        Vendor::create($data);
 
         return redirect()->route('wo.vendors.index')->with('success', 'Vendor baru berhasil ditambahkan.');
     }
@@ -56,13 +66,25 @@ class VendorController extends Controller
             'category' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string'],
-            'price_range' => ['nullable', 'string', 'max:255'],
+            'price' => ['nullable', 'numeric', 'min:0'],
             'rating' => ['required', 'numeric', 'min:1', 'max:5'],
             'status' => ['required', 'in:active,inactive'],
             'notes' => ['nullable', 'string'],
+            'packages' => ['nullable', 'array'],
+            'packages.*.name' => ['nullable', 'string', 'max:255'],
+            'packages.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        $vendor->update($request->all());
+        $data = $request->all();
+        if ($request->has('packages')) {
+            $data['packages'] = array_values(array_filter($request->input('packages', []), function ($pkg) {
+                return !empty(trim($pkg['name'] ?? ''));
+            }));
+        } else {
+            $data['packages'] = null;
+        }
+
+        $vendor->update($data);
 
         return redirect()->route('wo.vendors.index')->with('success', 'Data vendor berhasil diperbarui.');
     }

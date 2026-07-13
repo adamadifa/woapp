@@ -2,13 +2,15 @@
     <div class="space-y-6" x-data="{ 
         showCreateModal: false, 
         showEditModal: false,
+        createPackages: [],
+        editPackages: [],
         editData: {
             id: '',
             name: '',
             category: '',
             phone: '',
             address: '',
-            price_range: '',
+            price: '',
             rating: '5',
             status: 'active',
             notes: '',
@@ -20,11 +22,12 @@
             this.editData.category = vendor.category;
             this.editData.phone = vendor.phone || '';
             this.editData.address = vendor.address || '';
-            this.editData.price_range = vendor.price_range || '';
+            this.editData.price = vendor.price || '';
             this.editData.rating = vendor.rating;
             this.editData.status = vendor.status;
             this.editData.notes = vendor.notes || '';
             this.editData.action = actionUrl;
+            this.editPackages = vendor.packages ? JSON.parse(JSON.stringify(vendor.packages)) : [];
             this.showEditModal = true;
         }
     }">
@@ -77,10 +80,22 @@
                                 </div>
                             @endif
 
-                            @if($vendor->price_range)
+                            @if(!empty($vendor->packages) && count($vendor->packages) > 0)
+                                <div class="pt-2 border-t border-dashed border-gray-100 dark:border-gray-700/30 space-y-1">
+                                    <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Variasi Paket & Harga:</span>
+                                    <div class="space-y-1 max-h-24 overflow-y-auto pr-1">
+                                        @foreach($vendor->packages as $pkg)
+                                            <div class="flex items-center justify-between text-[10px] bg-gray-50/50 dark:bg-gray-900/30 px-2 py-0.5 rounded border border-gray-50 dark:border-gray-700/10">
+                                                <span class="font-medium text-gray-600 dark:text-gray-400 truncate max-w-[150px]">{{ $pkg['name'] }}</span>
+                                                <span class="font-bold text-pink-500 dark:text-pink-400 shrink-0">Rp{{ number_format($pkg['price'] ?? 0, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @elseif($vendor->price)
                                 <div class="flex items-center gap-2">
                                     <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span>{{ $vendor->price_range }}</span>
+                                    <span>Rp{{ number_format($vendor->price, 0, ',', '.') }}</span>
                                 </div>
                             @endif
 
@@ -188,8 +203,8 @@
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Range Harga / Pricelist</label>
-                                <input type="text" name="price_range" placeholder="Contoh: Rp 5jt - 15jt" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Harga Fix (Rupiah)</label>
+                                <input type="number" name="price" placeholder="Contoh: 10000000" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
                             </div>
 
                             <div>
@@ -215,6 +230,28 @@
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Alamat Kantor Vendor</label>
                             <textarea name="address" rows="2" placeholder="Masukkan alamat lengkap vendor..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all"></textarea>
+                        </div>
+
+                        <!-- Variasi Paket / Harga -->
+                        <div class="space-y-3 p-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Variasi Paket & Harga (Opsional)</span>
+                                <button type="button" @click="createPackages.push({name: '', price: ''})" class="text-[10px] text-pink-500 font-bold hover:text-pink-600 transition-all flex items-center gap-1">
+                                    + Tambah Paket
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <template x-for="(pkg, index) in createPackages" :key="index">
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" :name="'packages['+index+'][name]'" x-model="pkg.name" required placeholder="Nama Paket (cth: Silver 500 Pax)" class="flex-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                        <input type="number" :name="'packages['+index+'][price]'" x-model="pkg.price" required placeholder="Harga (cth: 25000000)" class="w-32 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                        <button type="button" @click="createPackages.splice(index, 1)" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
 
                         <div>
@@ -289,8 +326,8 @@
                             </div>
 
                             <div>
-                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Range Harga / Pricelist</label>
-                                <input type="text" name="price_range" x-model="editData.price_range" placeholder="Contoh: Rp 5jt - 15jt" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Harga Fix (Rupiah)</label>
+                                <input type="number" name="price" x-model="editData.price" placeholder="Contoh: 10000000" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
                             </div>
 
                             <div>
@@ -316,6 +353,28 @@
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">Alamat Kantor Vendor</label>
                             <textarea name="address" x-model="editData.address" rows="2" placeholder="Masukkan alamat lengkap vendor..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl py-2.5 px-4 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 dark:focus:ring-offset-gray-900 focus:outline-none text-gray-900 dark:text-white transition-all"></textarea>
+                        </div>
+
+                        <!-- Variasi Paket / Harga -->
+                        <div class="space-y-3 p-4 bg-gray-50/50 dark:bg-gray-900/30 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Variasi Paket & Harga (Opsional)</span>
+                                <button type="button" @click="editPackages.push({name: '', price: ''})" class="text-[10px] text-pink-500 font-bold hover:text-pink-600 transition-all flex items-center gap-1">
+                                    + Tambah Paket
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <template x-for="(pkg, index) in editPackages" :key="index">
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" :name="'packages['+index+'][name]'" x-model="pkg.name" required placeholder="Nama Paket (cth: Silver 500 Pax)" class="flex-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                        <input type="number" :name="'packages['+index+'][price]'" x-model="pkg.price" required placeholder="Harga (cth: 25000000)" class="w-32 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg py-2 px-3 text-xs focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none text-gray-900 dark:text-white transition-all">
+                                        <button type="button" @click="editPackages.splice(index, 1)" class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
 
                         <div>
